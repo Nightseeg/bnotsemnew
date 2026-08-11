@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - ADMIN DASHBOARD MODULE (EXACT 16 PRODUCTS & EDITABLE)
+   BNOT SÉMINAIRE - ADMIN DASHBOARD MODULE (IMAGE FILE UPLOADER & EDITING)
    ========================================================================== */
 
 import { Auth } from '../auth.js';
@@ -342,7 +342,7 @@ function renderProductsTab(products) {
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div>
           <h3 class="section-title" style="margin: 0;"><i class="fa-solid fa-boxes-packing"></i> Catalogue des 16 Articles (Table Supabase products)</h3>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.2rem 0 0;">Vous pouvez modifier les prix, titres, passer des articles en Rupture de Stock, ou en ajouter/supprimer. Tout est synchronisé avec Supabase.</p>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.2rem 0 0;">Vous pouvez modifier les prix, titres, importer des photos depuis votre appareil, passer en Rupture de Stock, ou ajouter/supprimer des articles.</p>
         </div>
         <button class="btn btn-pink-gradient" id="btn-admin-add-product">
           <i class="fa-solid fa-plus"></i> Ajouter un Article dans Supabase
@@ -363,7 +363,7 @@ function renderProductsTab(products) {
           <tbody>
             ${products.map(prod => `
               <tr>
-                <td><img src="${prod.image}" alt="${prod.name}" style="width: 45px; height: 45px; border-radius: 6px; object-fit: cover;"></td>
+                <td><img src="${prod.image}" alt="${prod.name}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color);"></td>
                 <td>
                   <strong>${prod.name || prod.title}</strong><br>
                   <span style="font-size: 0.78rem; color: var(--text-muted);">${(prod.description || '').substring(0, 50)}...</span>
@@ -455,6 +455,8 @@ function bindTabEventListeners(tab, users, reservations, products, onNavigate) {
 }
 
 function showEditProductModal(prod, onNavigate) {
+  let uploadedImageData = prod.image;
+
   const modalHtml = `
     <div class="modal-overlay" id="modal-edit-product">
       <div class="modal-content">
@@ -480,10 +482,18 @@ function showEditProductModal(prod, onNavigate) {
               </select>
             </div>
           </div>
+
+          <!-- File Upload Button instead of URL input -->
           <div class="form-group">
-            <label class="form-label">URL de l'image</label>
-            <input type="text" class="form-control" id="edit-prod-img" value="${prod.image}">
+            <label class="form-label"><i class="fa-solid fa-image" style="color: var(--accent-1);"></i> Photo de l'Article (Importer une image)</label>
+            <input type="file" class="form-control" id="edit-prod-file" accept="image/*">
+            
+            <div id="edit-prod-preview" style="margin-top: 0.75rem; display: flex; align-items: center; gap: 1rem; background: var(--bg-main); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border-color);">
+              <img id="img-edit-preview-el" src="${prod.image}" alt="Aperçu" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover;">
+              <span style="font-size: 0.85rem; color: var(--text-muted);">Photo actuelle de l'article</span>
+            </div>
           </div>
+
           <div class="form-group">
             <label class="form-label">Description</label>
             <textarea class="form-control" id="edit-prod-desc" rows="3">${prod.description}</textarea>
@@ -500,6 +510,20 @@ function showEditProductModal(prod, onNavigate) {
   document.body.insertAdjacentHTML('beforeend', modalHtml);
   const closeModal = () => document.getElementById('modal-edit-product')?.remove();
 
+  const fileInput = document.getElementById('edit-prod-file');
+  fileInput?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        uploadedImageData = event.target.result;
+        const previewEl = document.getElementById('img-edit-preview-el');
+        if (previewEl) previewEl.src = uploadedImageData;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
   document.getElementById('btn-close-edit-prod-modal')?.addEventListener('click', closeModal);
   document.getElementById('btn-cancel-edit-prod')?.addEventListener('click', closeModal);
 
@@ -507,7 +531,6 @@ function showEditProductModal(prod, onNavigate) {
     const name = document.getElementById('edit-prod-name').value.trim();
     const price = parseFloat(document.getElementById('edit-prod-price').value) || 0;
     const status = document.getElementById('edit-prod-status').value;
-    const image = document.getElementById('edit-prod-img').value.trim();
     const description = document.getElementById('edit-prod-desc').value.trim();
 
     await SupabaseApi.updateProduct(prod.id, {
@@ -515,12 +538,89 @@ function showEditProductModal(prod, onNavigate) {
       name: name,
       price: price,
       status: status,
-      image: image,
+      image: uploadedImageData,
       description: description
     });
 
     await Storage.syncFromSupabase();
     window.showToast(`L'article "${name}" a été mis à jour dans Supabase !`, 'success');
+    closeModal();
+    onNavigate('admin', 'products');
+  });
+}
+
+function showAddProductModal(onNavigate) {
+  let uploadedImageData = 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80';
+
+  const modalHtml = `
+    <div class="modal-overlay" id="modal-add-product">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title"><i class="fa-solid fa-plus-circle" style="color: var(--text-main);"></i> Ajouter un Produit (Supabase)</h3>
+          <button class="modal-close" id="btn-close-prod-modal"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Titre du Produit *</label>
+            <input type="text" class="form-control" id="new-prod-name" placeholder="ex: Adaptateur Universel Israël" required>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label">Prix (₪) *</label>
+              <input type="number" class="form-control" id="new-prod-price" placeholder="150" value="100" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label"><i class="fa-solid fa-image" style="color: var(--accent-1);"></i> Photo (Importer)</label>
+              <input type="file" class="form-control" id="new-prod-file" accept="image/*">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" id="new-prod-desc" rows="3" placeholder="Description de l'article..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" id="btn-cancel-add-prod">Annuler</button>
+          <button class="btn btn-pink-gradient" id="btn-submit-add-prod">Ajouter dans Supabase</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  const closeModal = () => document.getElementById('modal-add-product')?.remove();
+
+  const fileInput = document.getElementById('new-prod-file');
+  fileInput?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        uploadedImageData = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  document.getElementById('btn-close-prod-modal')?.addEventListener('click', closeModal);
+  document.getElementById('btn-cancel-add-prod')?.addEventListener('click', closeModal);
+
+  document.getElementById('btn-submit-add-prod')?.addEventListener('click', async () => {
+    const name = document.getElementById('new-prod-name').value.trim();
+    if (!name) {
+      alert('Veuillez saisir un nom de produit');
+      return;
+    }
+
+    await Storage.addProduct({
+      name: name,
+      title: name,
+      price: parseFloat(document.getElementById('new-prod-price').value) || 0,
+      image: uploadedImageData,
+      description: document.getElementById('new-prod-desc').value.trim() || 'Article de qualité pour le séminaire.'
+    });
+
+    window.showToast(`Produit "${name}" créé dans Supabase !`, 'success');
     closeModal();
     onNavigate('admin', 'products');
   });
@@ -661,67 +761,4 @@ function showGirlDetailModal(girl, reservations, onNavigate) {
   document.body.insertAdjacentHTML('beforeend', modalHtml);
   const closeModal = () => document.getElementById('modal-girl-detail')?.remove();
   document.getElementById('btn-close-girl-modal')?.addEventListener('click', closeModal);
-}
-
-function showAddProductModal(onNavigate) {
-  const modalHtml = `
-    <div class="modal-overlay" id="modal-add-product">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h3 class="modal-title"><i class="fa-solid fa-plus-circle" style="color: var(--text-main);"></i> Ajouter un Produit (Supabase)</h3>
-          <button class="modal-close" id="btn-close-prod-modal"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label">Titre du Produit</label>
-            <input type="text" class="form-control" id="new-prod-name" placeholder="ex: Adaptateur Universel Israël" required>
-          </div>
-          <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label">Prix (₪)</label>
-              <input type="number" class="form-control" id="new-prod-price" placeholder="150" value="100" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label">URL de l'image</label>
-              <input type="text" class="form-control" id="new-prod-img" value="https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea class="form-control" id="new-prod-desc" rows="3" placeholder="Description de l'article..."></textarea>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" id="btn-cancel-add-prod">Annuler</button>
-          <button class="btn btn-pink-gradient" id="btn-submit-add-prod">Ajouter dans Supabase</button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
-  const closeModal = () => document.getElementById('modal-add-product')?.remove();
-
-  document.getElementById('btn-close-prod-modal')?.addEventListener('click', closeModal);
-  document.getElementById('btn-cancel-add-prod')?.addEventListener('click', closeModal);
-
-  document.getElementById('btn-submit-add-prod')?.addEventListener('click', async () => {
-    const name = document.getElementById('new-prod-name').value.trim();
-    if (!name) {
-      alert('Veuillez saisir un nom de produit');
-      return;
-    }
-
-    await Storage.addProduct({
-      name: name,
-      title: name,
-      price: parseFloat(document.getElementById('new-prod-price').value) || 0,
-      image: document.getElementById('new-prod-img').value.trim(),
-      description: document.getElementById('new-prod-desc').value.trim() || 'Article de qualité pour le séminaire.'
-    });
-
-    window.showToast(`Produit "${name}" créé dans Supabase !`, 'success');
-    closeModal();
-    onNavigate('admin', 'products');
-  });
 }

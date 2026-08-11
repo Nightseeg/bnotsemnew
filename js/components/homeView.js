@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - HOME PAGE VIEW (HERO & NOS SERVICES MATCHING USER IMAGES)
+   BNOT SÉMINAIRE - HOME PAGE VIEW (HERO & NOS SERVICES MATCHING USER DESIGNS)
    ========================================================================== */
 
 import { Storage } from '../storage.js';
@@ -29,25 +29,14 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
               La plateforme de référence pour accompagner les jeunes filles de séminaire, étudiantes et leurs familles : Démarches administratives, boutique, événements, dons et plein d'autres choses à venir.
             </p>
 
-            <!-- Buttons Row -->
+            <!-- Buttons Row (Only Faire un don & M'inscrire) -->
             <div style="display: flex; flex-wrap: wrap; gap: 0.85rem; align-items: center; margin-bottom: 1rem;">
-              <button class="btn btn-hero-primary" id="btn-hero-study" style="background: linear-gradient(135deg, #F9832A, #E85D04); color: white; border-radius: var(--radius-full); padding: 0.85rem 1.8rem; font-weight: 700; box-shadow: 0 6px 20px rgba(232, 93, 4, 0.25);">
-                Je viens étudier en Israël
-              </button>
-
-              <button class="btn btn-outline-pill" id="btn-hero-don" style="padding: 0.85rem 1.6rem; font-weight: 700;">
+              <button class="btn btn-outline-pill" id="btn-hero-don" style="padding: 0.85rem 1.8rem; font-weight: 700;">
                 Faire un don
               </button>
 
-              <button class="btn btn-hero-dark" id="btn-hero-register" style="background: #0F2537; color: white; border-radius: var(--radius-full); padding: 0.85rem 1.8rem; font-weight: 700; box-shadow: 0 6px 20px rgba(15, 37, 55, 0.2);">
+              <button class="btn btn-hero-dark" id="btn-hero-register" style="background: #0F2537; color: white; border-radius: var(--radius-full); padding: 0.85rem 2rem; font-weight: 700; box-shadow: 0 6px 20px rgba(15, 37, 55, 0.2);">
                 M'inscrire
-              </button>
-            </div>
-
-            <!-- Secondary Button Row below -->
-            <div>
-              <button class="btn btn-outline-pill" id="btn-hero-dvar" style="padding: 0.65rem 1.4rem; font-size: 0.88rem; font-weight: 600;">
-                Dvar Torah de la semaine
               </button>
             </div>
           </div>
@@ -308,10 +297,8 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
 
   setTimeout(() => {
     // Navigation handlers
-    document.getElementById('btn-hero-study')?.addEventListener('click', () => showServiceFormModal('Visa étudiant'));
     document.getElementById('btn-hero-don')?.addEventListener('click', () => window.showToast('Page de don en cours de préparation.', 'info'));
     document.getElementById('btn-hero-register')?.addEventListener('click', () => onOpenAuthModal('signup'));
-    document.getElementById('btn-hero-dvar')?.addEventListener('click', () => window.showToast('Le Dvar Torah de la semaine sera publié chaque jeudi !', 'info'));
     
     document.getElementById('btn-hero-card-boutique')?.addEventListener('click', () => onNavigate('boutique'));
     document.getElementById('btn-card-boutique')?.addEventListener('click', () => onNavigate('boutique'));

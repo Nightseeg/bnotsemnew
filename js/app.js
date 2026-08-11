@@ -1,19 +1,19 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (MOBILE & FLOATING CART INTEGRATED)
+   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=1301)
    ========================================================================== */
 
-import { Storage } from './storage.js?v=1201';
-import { Auth } from './auth.js?v=1201';
-import { renderNavbar } from './components/navbar.js?v=1201';
-import { renderHomeView } from './components/homeView.js?v=1201';
-import { renderStudentDashboard } from './components/studentDash.js?v=1201';
-import { renderKoupatView } from './components/koupatView.js?v=1201';
-import { renderVisaView } from './components/visaView.js?v=1201';
-import { renderBoutiqueView } from './components/boutiqueView.js?v=1201';
-import { renderAdminView } from './components/adminView.js?v=1201';
-import { renderContactView } from './components/contactView.js?v=1201';
-import { showAuthModal } from './components/authModal.js?v=1201';
-import { renderCartDrawer } from './components/cartDrawer.js?v=1201';
+import { Storage } from './storage.js?v=1301';
+import { Auth } from './auth.js?v=1301';
+import { renderNavbar } from './components/navbar.js?v=1301';
+import { renderHomeView } from './components/homeView.js?v=1301';
+import { renderStudentDashboard } from './components/studentDash.js?v=1301';
+import { renderKoupatView } from './components/koupatView.js?v=1301';
+import { renderVisaView } from './components/visaView.js?v=1301';
+import { renderBoutiqueView } from './components/boutiqueView.js?v=1301';
+import { renderAdminView } from './components/adminView.js?v=1301';
+import { renderContactView } from './components/contactView.js?v=1301';
+import { showAuthModal } from './components/authModal.js?v=1301';
+import { renderCartDrawer } from './components/cartDrawer.js?v=1301';
 
 let currentRoute = 'home';
 let currentSubParam = null;
@@ -134,18 +134,17 @@ function renderApp() {
         <div>
           <h4 style="font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 1.2rem;">Services</h4>
           <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; color: #CBD5E1;">
-            <li><a href="#" class="footer-link-action" data-action="form-visa">Je viens étudier en Israël</a></li>
-            <li><a href="#" class="footer-link-action" data-action="contact">À propos</a></li>
-            <li><a href="#" class="footer-link-action" data-action="home">Tous les services</a></li>
-            <li><a href="#" class="footer-link-action" data-action="form-visa">Visa étudiant</a></li>
-            <li><a href="#" class="footer-link-action" data-action="form-koupat">Koupat Holim</a></li>
+            <li><a href="#" class="footer-link-action" data-action="form-visa">Visa étudiant A/2</a></li>
+            <li><a href="#" class="footer-link-action" data-action="form-koupat">Assurance Koupat Holim</a></li>
+            <li><a href="#" class="footer-link-action" data-action="contact">À propos & Contact</a></li>
+            <li><a href="#" class="footer-link-action" data-action="home">Tous nos services</a></li>
           </ul>
         </div>
 
         <div>
           <h4 style="font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 1.2rem;">Plateforme</h4>
           <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; color: #CBD5E1;">
-            <li><a href="#" class="footer-link-action" data-action="admin">Admin</a></li>
+            <li><a href="#" class="footer-link-action" data-action="admin">Espace Admin</a></li>
             <li><a href="#" class="footer-link-action" data-action="dashboard">Espace Élève</a></li>
             <li><a href="#" class="footer-link-action" data-action="contact">Contact</a></li>
           </ul>
