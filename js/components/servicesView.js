@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - NOS SERVICES (KOUPAT HOLIM BIENTÔT DISPONIBLE)
+   BNOT SÉMINAIRE - NOS SERVICES (WITH ALL 5 CUSTOM USER UPLOADED PHOTOS)
    ========================================================================== */
 
 import { showServiceFormModal } from './formModal.js';
@@ -23,10 +23,10 @@ export function renderServicesView(onNavigate) {
       <!-- 2 Columns Grid of Split Horizontal Cards -->
       <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 2.5rem;" class="grid-2">
         
-        <!-- Card 1: Koupat Holim (Bientôt disponible) -->
+        <!-- Card 1: Koupat Holim (Bientôt disponible - CUSTOM PHOTO) -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
-            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80" alt="Koupat Holim" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="assets/images/koupat_holim.jpg?v=2701" alt="Koupat Holim Maccabi" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem;">
@@ -54,7 +54,7 @@ export function renderServicesView(onNavigate) {
         <!-- Card 2: Visa étudiant (A/2) -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
-            <img src="assets/images/visa_etudiant.jpg?v=2401" alt="Visa étudiant A/2" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="assets/images/visa_etudiant.jpg?v=2701" alt="Visa étudiant A/2" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
             <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
@@ -80,7 +80,7 @@ export function renderServicesView(onNavigate) {
         <!-- Card 3: ETA-IL -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
-            <img src="assets/images/eta_il.jpg?v=2401" alt="ETA-IL" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="assets/images/eta_il.jpg?v=2701" alt="ETA-IL" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
             <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
@@ -106,7 +106,7 @@ export function renderServicesView(onNavigate) {
         <!-- Card 4: Installation en Israël -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
-            <img src="assets/images/installation_israel.jpg?v=2401" alt="Installation en Israël" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="assets/images/installation_israel.jpg?v=2701" alt="Installation en Israël" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
             <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
@@ -134,7 +134,7 @@ export function renderServicesView(onNavigate) {
       <!-- Card 5: Boutique literie (Full width split card) -->
       <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; max-width: 900px; margin: 0 auto;">
         <div style="height: 100%; min-height: 280px; position: relative;">
-          <img src="assets/images/boutique_literie.jpg?v=2401" alt="Boutique literie & Équipements" style="width: 100%; height: 100%; object-fit: cover;">
+          <img src="assets/images/boutique_literie.jpg?v=2701" alt="Boutique literie & Équipements" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
           <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
