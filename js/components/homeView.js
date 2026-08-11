@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - HOME PAGE VIEW (CLEAN HERO WITHOUT DEPRECATED BUTTONS/SERVICES)
+   BNOT SÉMINAIRE - HOME PAGE VIEW (HERO BUTTONS UPDATED)
    ========================================================================== */
 
 import { Storage } from '../storage.js';
@@ -28,14 +28,14 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
               La plateforme de référence pour accompagner les jeunes filles de séminaire, étudiantes et leurs familles : Démarches administratives, boutique, événements, dons et plein d'autres choses à venir.
             </p>
 
-            <!-- Buttons Row (Strictly Faire un don & M'inscrire ONLY) -->
+            <!-- Buttons Row (Préparer mon arrivée & Découvrir la boutique) -->
             <div style="display: flex; flex-wrap: wrap; gap: 0.85rem; align-items: center; margin-bottom: 1rem;">
-              <button class="btn btn-outline-pill" id="btn-hero-don" style="padding: 0.85rem 1.8rem; font-weight: 700;">
-                Faire un don
+              <button class="btn btn-hero-dark" id="btn-hero-prepare" style="background: #0F2537; color: white; border-radius: var(--radius-full); padding: 0.85rem 2rem; font-weight: 700; box-shadow: 0 6px 20px rgba(15, 37, 55, 0.2);">
+                Préparer mon arrivée
               </button>
 
-              <button class="btn btn-hero-dark" id="btn-hero-register" style="background: #0F2537; color: white; border-radius: var(--radius-full); padding: 0.85rem 2rem; font-weight: 700; box-shadow: 0 6px 20px rgba(15, 37, 55, 0.2);">
-                M'inscrire
+              <button class="btn btn-outline-pill" id="btn-hero-boutique" style="padding: 0.85rem 1.8rem; font-weight: 700;">
+                Découvrir la boutique
               </button>
             </div>
           </div>
@@ -147,8 +147,8 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
   `;
 
   setTimeout(() => {
-    document.getElementById('btn-hero-don')?.addEventListener('click', () => window.showToast('Page de don en cours de préparation.', 'info'));
-    document.getElementById('btn-hero-register')?.addEventListener('click', () => onOpenAuthModal('signup'));
+    document.getElementById('btn-hero-prepare')?.addEventListener('click', () => onNavigate('services'));
+    document.getElementById('btn-hero-boutique')?.addEventListener('click', () => onNavigate('boutique'));
     
     document.getElementById('btn-card-visa-nav')?.addEventListener('click', () => onNavigate('visa'));
     document.getElementById('btn-card-koupat-nav')?.addEventListener('click', () => onNavigate('koupat'));

@@ -1,20 +1,20 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=1901 NAVBAR CLEANUP)
+   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=2001 HERO BUTTONS UPDATED)
    ========================================================================== */
 
-import { Storage } from './storage.js?v=1901';
-import { Auth } from './auth.js?v=1901';
-import { renderNavbar } from './components/navbar.js?v=1901';
-import { renderHomeView } from './components/homeView.js?v=1901';
-import { renderServicesView } from './components/servicesView.js?v=1901';
-import { renderStudentDashboard } from './components/studentDash.js?v=1901';
-import { renderKoupatView } from './components/koupatView.js?v=1901';
-import { renderVisaView } from './components/visaView.js?v=1901';
-import { renderBoutiqueView } from './components/boutiqueView.js?v=1901';
-import { renderAdminView } from './components/adminView.js?v=1901';
-import { renderContactView } from './components/contactView.js?v=1901';
-import { showAuthModal } from './components/authModal.js?v=1901';
-import { renderCartDrawer } from './components/cartDrawer.js?v=1901';
+import { Storage } from './storage.js?v=2001';
+import { Auth } from './auth.js?v=2001';
+import { renderNavbar } from './components/navbar.js?v=2001';
+import { renderHomeView } from './components/homeView.js?v=2001';
+import { renderServicesView } from './components/servicesView.js?v=2001';
+import { renderStudentDashboard } from './components/studentDash.js?v=2001';
+import { renderKoupatView } from './components/koupatView.js?v=2001';
+import { renderVisaView } from './components/visaView.js?v=2001';
+import { renderBoutiqueView } from './components/boutiqueView.js?v=2001';
+import { renderAdminView } from './components/adminView.js?v=2001';
+import { renderContactView } from './components/contactView.js?v=2001';
+import { showAuthModal } from './components/authModal.js?v=2001';
+import { renderCartDrawer } from './components/cartDrawer.js?v=2001';
 
 let currentRoute = 'home';
 let currentSubParam = null;
