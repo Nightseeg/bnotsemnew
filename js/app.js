@@ -1,20 +1,19 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER & ROUTER (16 PRODUCTS CLEANED)
+   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (MOBILE & FLOATING CART INTEGRATED)
    ========================================================================== */
 
-import { Storage } from './storage.js?v=1101';
-import { Auth } from './auth.js?v=1101';
-import { renderNavbar } from './components/navbar.js?v=1101';
-import { renderHomeView } from './components/homeView.js?v=1101';
-import { renderStudentDashboard } from './components/studentDash.js?v=1101';
-import { renderKoupatView } from './components/koupatView.js?v=1101';
-import { renderVisaView } from './components/visaView.js?v=1101';
-import { renderBoutiqueView } from './components/boutiqueView.js?v=1101';
-import { renderAdminView } from './components/adminView.js?v=1101';
-import { renderContactView } from './components/contactView.js?v=1101';
-import { showAuthModal } from './components/authModal.js?v=1101';
-import { renderCartDrawer } from './components/cartDrawer.js?v=1101';
-import { showServiceFormModal } from './components/formModal.js?v=1101';
+import { Storage } from './storage.js?v=1201';
+import { Auth } from './auth.js?v=1201';
+import { renderNavbar } from './components/navbar.js?v=1201';
+import { renderHomeView } from './components/homeView.js?v=1201';
+import { renderStudentDashboard } from './components/studentDash.js?v=1201';
+import { renderKoupatView } from './components/koupatView.js?v=1201';
+import { renderVisaView } from './components/visaView.js?v=1201';
+import { renderBoutiqueView } from './components/boutiqueView.js?v=1201';
+import { renderAdminView } from './components/adminView.js?v=1201';
+import { renderContactView } from './components/contactView.js?v=1201';
+import { showAuthModal } from './components/authModal.js?v=1201';
+import { renderCartDrawer } from './components/cartDrawer.js?v=1201';
 
 let currentRoute = 'home';
 let currentSubParam = null;
@@ -120,8 +119,8 @@ function renderApp() {
   }
 
   const footerHtml = `
-    <footer style="background: #081627; color: white; padding: 4.5rem 2rem 3rem; margin-top: auto; font-size: 0.92rem;">
-      <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.2fr; gap: 3rem;">
+    <footer style="background: #081627; color: white; padding: 3.5rem 1.5rem 2.5rem; margin-top: auto; font-size: 0.92rem;">
+      <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.2fr; gap: 2.5rem;">
         
         <div>
           <h3 style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; margin-bottom: 1rem; color: #ffffff;">
@@ -140,8 +139,6 @@ function renderApp() {
             <li><a href="#" class="footer-link-action" data-action="home">Tous les services</a></li>
             <li><a href="#" class="footer-link-action" data-action="form-visa">Visa étudiant</a></li>
             <li><a href="#" class="footer-link-action" data-action="form-koupat">Koupat Holim</a></li>
-            <li><a href="#" class="footer-link-action" data-action="dvar">Dvar Torah</a></li>
-            <li><a href="https://israel-entry.piba.gov.il/" target="_blank" style="color: #CBD5E1;">ETA-IL officiel</a></li>
           </ul>
         </div>
 
@@ -150,9 +147,7 @@ function renderApp() {
           <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; color: #CBD5E1;">
             <li><a href="#" class="footer-link-action" data-action="admin">Admin</a></li>
             <li><a href="#" class="footer-link-action" data-action="dashboard">Espace Élève</a></li>
-            <li><a href="#" class="footer-link-action" data-action="evenements">Événements</a></li>
-            <li><a href="#" class="footer-link-action" data-action="programme">Programme</a></li>
-            <li><a href="#" class="footer-link-action" data-action="guide">Guide PDF</a></li>
+            <li><a href="#" class="footer-link-action" data-action="contact">Contact</a></li>
           </ul>
         </div>
 
@@ -171,20 +166,12 @@ function renderApp() {
               <i class="fa-solid fa-phone" style="color: #F97316;"></i>
               <span>+33 7 67 96 71 48</span>
             </li>
-            <li style="display: flex; align-items: center; gap: 0.6rem;">
-              <i class="fa-solid fa-phone" style="color: #F97316;"></i>
-              <span>+972 53 472 7103</span>
-            </li>
-            <li style="display: flex; align-items: flex-start; gap: 0.6rem; margin-top: 0.2rem;">
-              <i class="fa-solid fa-location-dot" style="color: #F97316; margin-top: 3px;"></i>
-              <span>17 Rehov Apisga, Bayit Vagan, Jérusalem</span>
-            </li>
           </ul>
         </div>
 
       </div>
 
-      <div style="max-width: 1240px; margin: 3rem auto 0; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; color: #64748B; font-size: 0.85rem;">
+      <div style="max-width: 1240px; margin: 2.5rem auto 0; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; color: #64748B; font-size: 0.85rem;">
         <div>&copy; ${new Date().getFullYear()} Bnot Séminaire Israël — Tous droits réservés.</div>
         <div style="display: flex; gap: 1.5rem;">
           <a href="#" class="footer-link-action" data-action="home" style="color: #64748B;">Mentions Légales</a>
@@ -213,8 +200,7 @@ function renderApp() {
         else if (action === 'home') navigateTo('home');
         else if (action === 'admin') navigateTo('admin');
         else if (action === 'dashboard') navigateTo('dashboard');
-        else if (action === 'dvar') window.showToast('Le Dvar Torah de la semaine sera publié chaque jeudi !', 'info');
-        else window.showToast(`Section ${action} à venir !`, 'info');
+        else navigateTo('home');
       });
     });
   }, 0);
@@ -227,6 +213,10 @@ window.addEventListener('cart-updated', () => {
     const updatedNav = renderNavbar(currentRoute, navigateTo, () => renderCartDrawer(navigateTo), (mode) => showAuthModal(mode, navigateTo));
     navbarContainer.outerHTML = updatedNav;
   }
+});
+
+window.addEventListener('open-cart-drawer', () => {
+  renderCartDrawer(navigateTo);
 });
 
 document.addEventListener('DOMContentLoaded', async () => {

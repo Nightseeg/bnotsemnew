@@ -4,6 +4,10 @@ scratch/
 .brain/
 *.log
 
+# Git binaries
+mingit/
+mingit.zip
+
 # Dependencies
 node_modules/
 
