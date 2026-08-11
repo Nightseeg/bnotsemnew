@@ -1,19 +1,19 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (CLEAN FOOTER)
+   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=1501)
    ========================================================================== */
 
-import { Storage } from './storage.js?v=1401';
-import { Auth } from './auth.js?v=1401';
-import { renderNavbar } from './components/navbar.js?v=1401';
-import { renderHomeView } from './components/homeView.js?v=1401';
-import { renderStudentDashboard } from './components/studentDash.js?v=1401';
-import { renderKoupatView } from './components/koupatView.js?v=1401';
-import { renderVisaView } from './components/visaView.js?v=1401';
-import { renderBoutiqueView } from './components/boutiqueView.js?v=1401';
-import { renderAdminView } from './components/adminView.js?v=1401';
-import { renderContactView } from './components/contactView.js?v=1401';
-import { showAuthModal } from './components/authModal.js?v=1401';
-import { renderCartDrawer } from './components/cartDrawer.js?v=1401';
+import { Storage } from './storage.js?v=1501';
+import { Auth } from './auth.js?v=1501';
+import { renderNavbar } from './components/navbar.js?v=1501';
+import { renderHomeView } from './components/homeView.js?v=1501';
+import { renderStudentDashboard } from './components/studentDash.js?v=1501';
+import { renderKoupatView } from './components/koupatView.js?v=1501';
+import { renderVisaView } from './components/visaView.js?v=1501';
+import { renderBoutiqueView } from './components/boutiqueView.js?v=1501';
+import { renderAdminView } from './components/adminView.js?v=1501';
+import { renderContactView } from './components/contactView.js?v=1501';
+import { showAuthModal } from './components/authModal.js?v=1501';
+import { renderCartDrawer } from './components/cartDrawer.js?v=1501';
 
 let currentRoute = 'home';
 let currentSubParam = null;
@@ -135,7 +135,7 @@ function renderApp() {
           <h4 style="font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 1.2rem;">Services</h4>
           <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; color: #CBD5E1;">
             <li><a href="#" class="footer-link-action" data-action="form-visa">Visa étudiant A/2</a></li>
-            <li><a href="#" class="footer-link-action" data-action="form-koupat">Assurance Koupat Holim</a></li>
+            <li><a href="#" class="footer-link-action" data-action="form-koupat">Koupat Holim</a></li>
             <li><a href="https://israel-entry.piba.gov.il/" target="_blank" style="color: #CBD5E1;">ETA-IL officiel</a></li>
           </ul>
         </div>

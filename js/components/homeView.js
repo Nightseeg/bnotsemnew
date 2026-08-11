@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - HOME PAGE VIEW (HERO & NOS SERVICES MATCHING USER DESIGNS)
+   BNOT SÉMINAIRE - HOME PAGE VIEW (SERVICES SECTION WITH KOUPAT HOLIM)
    ========================================================================== */
 
 import { Storage } from '../storage.js';
@@ -160,26 +160,26 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
         <!-- 2 Columns Grid of Split Horizontal Cards -->
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 2rem;">
           
-          <!-- Card 1: Assurance maladie (Matching Screenshot) -->
+          <!-- Card 1: Koupat Holim (Replaced Assurance maladie) -->
           <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
             <div style="height: 100%; min-height: 280px; position: relative;">
-              <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80" alt="Assurance maladie" style="width: 100%; height: 100%; object-fit: cover;">
+              <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80" alt="Koupat Holim" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
               <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
-                Assurance maladie
+                Koupat Holim
               </h3>
               <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-main); margin-bottom: 0.75rem;">
                 Votre couverture santé en Israël, sans stress.
               </div>
               <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
-                Nous vous accompagnons gratuitement dans toutes vos démarches afin d’obtenir rapidement votre assurance maladie.
+                Nous vous accompagnons gratuitement dans toutes vos démarches afin d’obtenir rapidement votre affiliation Koupat Holim.
               </p>
               <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.65rem; align-items: flex-end;">
                 <button class="btn btn-service-go-koupat" style="background: #0F2537; color: white; border-radius: var(--radius-full); padding: 0.6rem 1.4rem; font-size: 0.85rem; font-weight: 700;">
                   En savoir plus
                 </button>
-                <button class="btn btn-outline-pill btn-service-form" data-service="Assurance maladie" style="padding: 0.55rem 1.25rem; font-size: 0.85rem;">
+                <button class="btn btn-outline-pill btn-service-form" data-service="Koupat Holim" style="padding: 0.55rem 1.25rem; font-size: 0.85rem;">
                   Faire une demande
                 </button>
               </div>
