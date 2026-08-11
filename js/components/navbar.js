@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - NAVBAR COMPONENT (MOBILE BURGER & DRAWER INTEGRATED)
+   BNOT SÉMINAIRE - NAVBAR COMPONENT (NOS SERVICES ADDED IN HEADER)
    ========================================================================== */
 
 import { Auth } from '../auth.js';
@@ -11,6 +11,7 @@ export function renderNavbar(currentRoute, onNavigate, onOpenCart, onOpenAuthMod
 
   const navItems = [
     { route: 'home', label: 'Accueil', icon: 'fa-house' },
+    { route: 'services', label: 'Nos Services', icon: 'fa-hand-holding-heart' },
     { route: 'boutique', label: 'Boutique', icon: 'fa-store' },
     { route: 'visa', label: 'Visa Étudiant', icon: 'fa-passport' },
     { route: 'koupat', label: 'Koupat Holim', icon: 'fa-notes-medical' },

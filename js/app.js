@@ -1,19 +1,20 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=1501)
+   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=1601 SERVICES ROUTE ADDED)
    ========================================================================== */
 
-import { Storage } from './storage.js?v=1501';
-import { Auth } from './auth.js?v=1501';
-import { renderNavbar } from './components/navbar.js?v=1501';
-import { renderHomeView } from './components/homeView.js?v=1501';
-import { renderStudentDashboard } from './components/studentDash.js?v=1501';
-import { renderKoupatView } from './components/koupatView.js?v=1501';
-import { renderVisaView } from './components/visaView.js?v=1501';
-import { renderBoutiqueView } from './components/boutiqueView.js?v=1501';
-import { renderAdminView } from './components/adminView.js?v=1501';
-import { renderContactView } from './components/contactView.js?v=1501';
-import { showAuthModal } from './components/authModal.js?v=1501';
-import { renderCartDrawer } from './components/cartDrawer.js?v=1501';
+import { Storage } from './storage.js?v=1601';
+import { Auth } from './auth.js?v=1601';
+import { renderNavbar } from './components/navbar.js?v=1601';
+import { renderHomeView } from './components/homeView.js?v=1601';
+import { renderServicesView } from './components/servicesView.js?v=1601';
+import { renderStudentDashboard } from './components/studentDash.js?v=1601';
+import { renderKoupatView } from './components/koupatView.js?v=1601';
+import { renderVisaView } from './components/visaView.js?v=1601';
+import { renderBoutiqueView } from './components/boutiqueView.js?v=1601';
+import { renderAdminView } from './components/adminView.js?v=1601';
+import { renderContactView } from './components/contactView.js?v=1601';
+import { showAuthModal } from './components/authModal.js?v=1601';
+import { renderCartDrawer } from './components/cartDrawer.js?v=1601';
 
 let currentRoute = 'home';
 let currentSubParam = null;
@@ -86,6 +87,9 @@ function renderApp() {
   let mainContentHtml = '';
 
   switch (currentRoute) {
+    case 'services':
+      mainContentHtml = renderServicesView(navigateTo);
+      break;
     case 'dashboard':
       mainContentHtml = renderStudentDashboard(navigateTo);
       break;
@@ -134,6 +138,7 @@ function renderApp() {
         <div>
           <h4 style="font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 1.2rem;">Services</h4>
           <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; color: #CBD5E1;">
+            <li><a href="#" class="footer-link-action" data-action="services">Nos Services</a></li>
             <li><a href="#" class="footer-link-action" data-action="form-visa">Visa étudiant A/2</a></li>
             <li><a href="#" class="footer-link-action" data-action="form-koupat">Koupat Holim</a></li>
             <li><a href="https://israel-entry.piba.gov.il/" target="_blank" style="color: #CBD5E1;">ETA-IL officiel</a></li>
@@ -192,7 +197,8 @@ function renderApp() {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const action = link.getAttribute('data-action');
-        if (action === 'form-visa') navigateTo('visa');
+        if (action === 'services') navigateTo('services');
+        else if (action === 'form-visa') navigateTo('visa');
         else if (action === 'form-koupat') navigateTo('koupat');
         else if (action === 'contact') navigateTo('contact');
         else if (action === 'home') navigateTo('home');
