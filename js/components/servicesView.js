@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - NOS SERVICES (DEDICATED FULL PAGE VIEW)
+   BNOT SÉMINAIRE - NOS SERVICES (DEDICATED FULL PAGE VIEW WITH CUSTOM VISA IMAGE)
    ========================================================================== */
 
 import { showServiceFormModal } from './formModal.js';
@@ -49,10 +49,10 @@ export function renderServicesView(onNavigate) {
           </div>
         </div>
 
-        <!-- Card 2: Visa étudiant (A/2) -->
+        <!-- Card 2: Visa étudiant (A/2) - CUSTOM IMAGE -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
-            <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80" alt="Visa étudiant" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="assets/images/visa_etudiant.jpg?v=2101" alt="Visa étudiant A/2" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
             <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
