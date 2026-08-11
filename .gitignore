@@ -1,0 +1,12 @@
+# Antigravity temporary logs & scratch
+.system_generated/
+scratch/
+.brain/
+*.log
+
+# Dependencies
+node_modules/
+
+# OS Files
+.DS_Store
+Thumbs.db
