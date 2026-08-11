@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - HOME PAGE VIEW (CARD 1 NOS SERVICES BUTTON ADDED)
+   BNOT SÉMINAIRE - HOME PAGE VIEW (KOUPAT HOLIM BIENTÔT DISPONIBLE)
    ========================================================================== */
 
 import { Storage } from '../storage.js';
@@ -56,12 +56,12 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
                   </button>
                 </div>
 
-                <!-- Row 2: Koupat Holim -->
+                <!-- Row 2: Koupat Holim (Bientôt disponible) -->
                 <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-main); border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 16px;">
                   <span style="font-weight: 700; font-size: 0.92rem; color: var(--text-main);">Koupat Holim</span>
-                  <button class="btn-hero-tag" id="btn-card-koupat-nav" style="background: #FDF2EE; color: #E85D04; border: 1px solid #FCD7C6; padding: 0.3rem 0.9rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.8rem;">
-                    Formulaire
-                  </button>
+                  <span style="background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; padding: 0.3rem 0.9rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.78rem;">
+                    <i class="fa-solid fa-clock"></i> Bientôt disponible
+                  </span>
                 </div>
 
                 <!-- Row 3: ETA-IL -->
@@ -157,7 +157,6 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
     
     document.getElementById('btn-card-services')?.addEventListener('click', () => onNavigate('services'));
     document.getElementById('btn-card-visa-nav')?.addEventListener('click', () => onNavigate('visa'));
-    document.getElementById('btn-card-koupat-nav')?.addEventListener('click', () => onNavigate('koupat'));
     document.getElementById('btn-hero-card-boutique')?.addEventListener('click', () => onNavigate('boutique'));
     document.getElementById('btn-card-boutique')?.addEventListener('click', () => onNavigate('boutique'));
     document.getElementById('btn-card-create-space')?.addEventListener('click', () => onOpenAuthModal('signup'));

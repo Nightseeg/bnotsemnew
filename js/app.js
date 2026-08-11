@@ -1,20 +1,20 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=2301 CARD 1 BUTTON ADDED)
+   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=2401 KOUPAT BIENTOT DISPO)
    ========================================================================== */
 
-import { Storage } from './storage.js?v=2301';
-import { Auth } from './auth.js?v=2301';
-import { renderNavbar } from './components/navbar.js?v=2301';
-import { renderHomeView } from './components/homeView.js?v=2301';
-import { renderServicesView } from './components/servicesView.js?v=2301';
-import { renderStudentDashboard } from './components/studentDash.js?v=2301';
-import { renderKoupatView } from './components/koupatView.js?v=2301';
-import { renderVisaView } from './components/visaView.js?v=2301';
-import { renderBoutiqueView } from './components/boutiqueView.js?v=2301';
-import { renderAdminView } from './components/adminView.js?v=2301';
-import { renderContactView } from './components/contactView.js?v=2301';
-import { showAuthModal } from './components/authModal.js?v=2301';
-import { renderCartDrawer } from './components/cartDrawer.js?v=2301';
+import { Storage } from './storage.js?v=2401';
+import { Auth } from './auth.js?v=2401';
+import { renderNavbar } from './components/navbar.js?v=2401';
+import { renderHomeView } from './components/homeView.js?v=2401';
+import { renderServicesView } from './components/servicesView.js?v=2401';
+import { renderStudentDashboard } from './components/studentDash.js?v=2401';
+import { renderKoupatView } from './components/koupatView.js?v=2401';
+import { renderVisaView } from './components/visaView.js?v=2401';
+import { renderBoutiqueView } from './components/boutiqueView.js?v=2401';
+import { renderAdminView } from './components/adminView.js?v=2401';
+import { renderContactView } from './components/contactView.js?v=2401';
+import { showAuthModal } from './components/authModal.js?v=2401';
+import { renderCartDrawer } from './components/cartDrawer.js?v=2401';
 
 let currentRoute = 'home';
 let currentSubParam = null;
@@ -140,7 +140,7 @@ function renderApp() {
           <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; color: #CBD5E1;">
             <li><a href="#" class="footer-link-action" data-action="services">Nos Services</a></li>
             <li><a href="#" class="footer-link-action" data-action="form-visa">Visa étudiant A/2</a></li>
-            <li><a href="#" class="footer-link-action" data-action="form-koupat">Koupat Holim</a></li>
+            <li><a href="#" class="footer-link-action" data-action="services">Koupat Holim</a></li>
             <li><a href="https://israel-entry.piba.gov.il/" target="_blank" style="color: #CBD5E1;">ETA-IL officiel</a></li>
           </ul>
         </div>
@@ -199,7 +199,7 @@ function renderApp() {
         const action = link.getAttribute('data-action');
         if (action === 'services') navigateTo('services');
         else if (action === 'form-visa') navigateTo('visa');
-        else if (action === 'form-koupat') navigateTo('koupat');
+        else if (action === 'form-koupat') navigateTo('services');
         else if (action === 'contact') navigateTo('contact');
         else if (action === 'home') navigateTo('home');
         else if (action === 'admin') navigateTo('admin');

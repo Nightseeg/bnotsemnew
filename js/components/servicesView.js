@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - NOS SERVICES (WITH ALL CUSTOM USER UPLOADS)
+   BNOT SÉMINAIRE - NOS SERVICES (KOUPAT HOLIM BIENTÔT DISPONIBLE)
    ========================================================================== */
 
 import { showServiceFormModal } from './formModal.js';
@@ -23,27 +23,29 @@ export function renderServicesView(onNavigate) {
       <!-- 2 Columns Grid of Split Horizontal Cards -->
       <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 2rem; margin-bottom: 2.5rem;" class="grid-2">
         
-        <!-- Card 1: Koupat Holim -->
+        <!-- Card 1: Koupat Holim (Bientôt disponible) -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
             <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80" alt="Koupat Holim" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
-            <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
-              Koupat Holim
-            </h3>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); line-height: 1.2; margin: 0;">
+                Koupat Holim
+              </h3>
+              <span style="background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.75rem; white-space: nowrap;">
+                <i class="fa-solid fa-clock"></i> Bientôt disponible
+              </span>
+            </div>
             <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-main); margin-bottom: 0.75rem;">
               Votre couverture santé en Israël, sans stress.
             </div>
             <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
-              Nous vous accompagnons gratuitement dans toutes vos démarches afin d’obtenir rapidement votre affiliation Koupat Holim (Maccabi, Clalit, Meuhedet, Leumit).
+              Nous vous accompagnerons gratuitement dans toutes vos démarches afin d’obtenir rapidement votre affiliation Koupat Holim (Maccabi, Clalit, Meuhedet, Leumit).
             </p>
             <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.65rem; align-items: flex-end;">
-              <button class="btn btn-service-go-koupat" style="background: #0F2537; color: white; border-radius: var(--radius-full); padding: 0.6rem 1.4rem; font-size: 0.85rem; font-weight: 700;">
-                Accéder au Formulaire
-              </button>
-              <button class="btn btn-outline-pill btn-service-form" data-service="Koupat Holim" style="padding: 0.55rem 1.25rem; font-size: 0.85rem;">
-                En savoir plus
+              <button class="btn" disabled style="background: #F1F5F9; color: #94A3B8; border: 1px solid #E2E8F0; border-radius: var(--radius-full); padding: 0.6rem 1.4rem; font-size: 0.85rem; font-weight: 700; cursor: not-allowed;">
+                <i class="fa-solid fa-lock"></i> Bientôt disponible
               </button>
             </div>
           </div>
@@ -52,7 +54,7 @@ export function renderServicesView(onNavigate) {
         <!-- Card 2: Visa étudiant (A/2) -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
-            <img src="assets/images/visa_etudiant.jpg?v=2201" alt="Visa étudiant A/2" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="assets/images/visa_etudiant.jpg?v=2401" alt="Visa étudiant A/2" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
             <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
@@ -78,7 +80,7 @@ export function renderServicesView(onNavigate) {
         <!-- Card 3: ETA-IL -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
-            <img src="assets/images/eta_il.jpg?v=2201" alt="ETA-IL" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="assets/images/eta_il.jpg?v=2401" alt="ETA-IL" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
             <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
@@ -104,7 +106,7 @@ export function renderServicesView(onNavigate) {
         <!-- Card 4: Installation en Israël -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
-            <img src="assets/images/installation_israel.jpg?v=2201" alt="Installation en Israël" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="assets/images/installation_israel.jpg?v=2401" alt="Installation en Israël" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
             <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
@@ -132,7 +134,7 @@ export function renderServicesView(onNavigate) {
       <!-- Card 5: Boutique literie (Full width split card) -->
       <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; max-width: 900px; margin: 0 auto;">
         <div style="height: 100%; min-height: 280px; position: relative;">
-          <img src="assets/images/boutique_literie.jpg?v=2201" alt="Boutique literie & Équipements" style="width: 100%; height: 100%; object-fit: cover;">
+          <img src="assets/images/boutique_literie.jpg?v=2401" alt="Boutique literie & Équipements" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
           <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
@@ -160,10 +162,6 @@ export function renderServicesView(onNavigate) {
   setTimeout(() => {
     document.querySelectorAll('.btn-service-go-boutique').forEach(btn => {
       btn.addEventListener('click', () => onNavigate('boutique'));
-    });
-    
-    document.querySelectorAll('.btn-service-go-koupat').forEach(btn => {
-      btn.addEventListener('click', () => onNavigate('koupat'));
     });
 
     document.querySelectorAll('.btn-service-go-visa').forEach(btn => {
