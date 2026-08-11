@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - NAVBAR COMPONENT (NOS SERVICES ADDED IN HEADER)
+   BNOT SÉMINAIRE - NAVBAR COMPONENT (HEADER LINKS CLEANUP)
    ========================================================================== */
 
 import { Auth } from '../auth.js';
@@ -13,8 +13,6 @@ export function renderNavbar(currentRoute, onNavigate, onOpenCart, onOpenAuthMod
     { route: 'home', label: 'Accueil', icon: 'fa-house' },
     { route: 'services', label: 'Nos Services', icon: 'fa-hand-holding-heart' },
     { route: 'boutique', label: 'Boutique', icon: 'fa-store' },
-    { route: 'visa', label: 'Visa Étudiant', icon: 'fa-passport' },
-    { route: 'koupat', label: 'Koupat Holim', icon: 'fa-notes-medical' },
     { route: 'contact', label: 'Contact', icon: 'fa-paper-plane' },
   ];
 

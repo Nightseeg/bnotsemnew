@@ -1,20 +1,20 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=1801 STORAGE FIX)
+   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=1901 NAVBAR CLEANUP)
    ========================================================================== */
 
-import { Storage } from './storage.js?v=1801';
-import { Auth } from './auth.js?v=1801';
-import { renderNavbar } from './components/navbar.js?v=1801';
-import { renderHomeView } from './components/homeView.js?v=1801';
-import { renderServicesView } from './components/servicesView.js?v=1801';
-import { renderStudentDashboard } from './components/studentDash.js?v=1801';
-import { renderKoupatView } from './components/koupatView.js?v=1801';
-import { renderVisaView } from './components/visaView.js?v=1801';
-import { renderBoutiqueView } from './components/boutiqueView.js?v=1801';
-import { renderAdminView } from './components/adminView.js?v=1801';
-import { renderContactView } from './components/contactView.js?v=1801';
-import { showAuthModal } from './components/authModal.js?v=1801';
-import { renderCartDrawer } from './components/cartDrawer.js?v=1801';
+import { Storage } from './storage.js?v=1901';
+import { Auth } from './auth.js?v=1901';
+import { renderNavbar } from './components/navbar.js?v=1901';
+import { renderHomeView } from './components/homeView.js?v=1901';
+import { renderServicesView } from './components/servicesView.js?v=1901';
+import { renderStudentDashboard } from './components/studentDash.js?v=1901';
+import { renderKoupatView } from './components/koupatView.js?v=1901';
+import { renderVisaView } from './components/visaView.js?v=1901';
+import { renderBoutiqueView } from './components/boutiqueView.js?v=1901';
+import { renderAdminView } from './components/adminView.js?v=1901';
+import { renderContactView } from './components/contactView.js?v=1901';
+import { showAuthModal } from './components/authModal.js?v=1901';
+import { renderCartDrawer } from './components/cartDrawer.js?v=1901';
 
 let currentRoute = 'home';
 let currentSubParam = null;
