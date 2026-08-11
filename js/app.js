@@ -1,20 +1,20 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=1601 SERVICES ROUTE ADDED)
+   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=1701 CLEAN HOME VIEW)
    ========================================================================== */
 
-import { Storage } from './storage.js?v=1601';
-import { Auth } from './auth.js?v=1601';
-import { renderNavbar } from './components/navbar.js?v=1601';
-import { renderHomeView } from './components/homeView.js?v=1601';
-import { renderServicesView } from './components/servicesView.js?v=1601';
-import { renderStudentDashboard } from './components/studentDash.js?v=1601';
-import { renderKoupatView } from './components/koupatView.js?v=1601';
-import { renderVisaView } from './components/visaView.js?v=1601';
-import { renderBoutiqueView } from './components/boutiqueView.js?v=1601';
-import { renderAdminView } from './components/adminView.js?v=1601';
-import { renderContactView } from './components/contactView.js?v=1601';
-import { showAuthModal } from './components/authModal.js?v=1601';
-import { renderCartDrawer } from './components/cartDrawer.js?v=1601';
+import { Storage } from './storage.js?v=1701';
+import { Auth } from './auth.js?v=1701';
+import { renderNavbar } from './components/navbar.js?v=1701';
+import { renderHomeView } from './components/homeView.js?v=1701';
+import { renderServicesView } from './components/servicesView.js?v=1701';
+import { renderStudentDashboard } from './components/studentDash.js?v=1701';
+import { renderKoupatView } from './components/koupatView.js?v=1701';
+import { renderVisaView } from './components/visaView.js?v=1701';
+import { renderBoutiqueView } from './components/boutiqueView.js?v=1701';
+import { renderAdminView } from './components/adminView.js?v=1701';
+import { renderContactView } from './components/contactView.js?v=1701';
+import { showAuthModal } from './components/authModal.js?v=1701';
+import { renderCartDrawer } from './components/cartDrawer.js?v=1701';
 
 let currentRoute = 'home';
 let currentSubParam = null;
