@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - NOS SERVICES (DEDICATED FULL PAGE VIEW WITH CUSTOM VISA IMAGE)
+   BNOT SÉMINAIRE - NOS SERVICES (WITH ALL CUSTOM USER UPLOADS)
    ========================================================================== */
 
 import { showServiceFormModal } from './formModal.js';
@@ -49,10 +49,10 @@ export function renderServicesView(onNavigate) {
           </div>
         </div>
 
-        <!-- Card 2: Visa étudiant (A/2) - CUSTOM IMAGE -->
+        <!-- Card 2: Visa étudiant (A/2) -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
-            <img src="assets/images/visa_etudiant.jpg?v=2101" alt="Visa étudiant A/2" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="assets/images/visa_etudiant.jpg?v=2201" alt="Visa étudiant A/2" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
             <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
@@ -78,7 +78,7 @@ export function renderServicesView(onNavigate) {
         <!-- Card 3: ETA-IL -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
-            <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=600&q=80" alt="ETA-IL" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="assets/images/eta_il.jpg?v=2201" alt="ETA-IL" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
             <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
@@ -104,7 +104,7 @@ export function renderServicesView(onNavigate) {
         <!-- Card 4: Installation en Israël -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
-            <img src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80" alt="Installation" style="width: 100%; height: 100%; object-fit: cover;">
+            <img src="assets/images/installation_israel.jpg?v=2201" alt="Installation en Israël" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
             <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
@@ -132,7 +132,7 @@ export function renderServicesView(onNavigate) {
       <!-- Card 5: Boutique literie (Full width split card) -->
       <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; max-width: 900px; margin: 0 auto;">
         <div style="height: 100%; min-height: 280px; position: relative;">
-          <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=600&q=80" alt="Boutique literie" style="width: 100%; height: 100%; object-fit: cover;">
+          <img src="assets/images/boutique_literie.jpg?v=2201" alt="Boutique literie & Équipements" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
           <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
