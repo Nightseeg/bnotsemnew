@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - HOME PAGE VIEW (HERO BUTTONS UPDATED)
+   BNOT SÉMINAIRE - HOME PAGE VIEW (CARD 1 NOS SERVICES BUTTON ADDED)
    ========================================================================== */
 
 import { Storage } from '../storage.js';
@@ -96,7 +96,7 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
         </div>
 
         <div class="grid-3">
-          <!-- Card 1 -->
+          <!-- Card 1: Préparer mon arrivée -->
           <div class="step-card">
             <div class="icon-badge-circle">
               <i class="fa-solid fa-check"></i>
@@ -106,9 +106,14 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
             <p class="step-card-text">
               L'année de séminaire est une étape unique, consacrée à la Torah, à la construction personnelle et à l'épanouissement. Pour vous permettre de vous concentrer sur l'essentiel, nous vous accompagnons dans la préparation de votre arrivée en Israël, avec tout le nécessaire soigneusement sélectionné et disponible sur place.
             </p>
+            <div style="margin-top: auto;">
+              <button class="btn btn-outline-pill btn-full" id="btn-card-services">
+                Nos services
+              </button>
+            </div>
           </div>
 
-          <!-- Card 2 -->
+          <!-- Card 2: Découvrir la boutique -->
           <div class="step-card">
             <div class="icon-badge-circle">
               <i class="fa-solid fa-cart-shopping"></i>
@@ -125,7 +130,7 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
             </div>
           </div>
 
-          <!-- Card 3 -->
+          <!-- Card 3: Créer mon espace -->
           <div class="step-card">
             <div class="icon-badge-circle">
               <i class="fa-solid fa-user"></i>
@@ -150,6 +155,7 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
     document.getElementById('btn-hero-prepare')?.addEventListener('click', () => onNavigate('services'));
     document.getElementById('btn-hero-boutique')?.addEventListener('click', () => onNavigate('boutique'));
     
+    document.getElementById('btn-card-services')?.addEventListener('click', () => onNavigate('services'));
     document.getElementById('btn-card-visa-nav')?.addEventListener('click', () => onNavigate('visa'));
     document.getElementById('btn-card-koupat-nav')?.addEventListener('click', () => onNavigate('koupat'));
     document.getElementById('btn-hero-card-boutique')?.addEventListener('click', () => onNavigate('boutique'));
