@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - AUTHENTICATION MODAL (SIMPLIFIED SIGNUP)
+   BNOT SÉMINAIRE - AUTHENTICATION MODAL (WITH LEGEND & BIRTHDATE FIELD)
    ========================================================================== */
 
 import { Auth } from '../auth.js';
@@ -13,13 +13,20 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
 
   const modalHtml = `
     <div class="modal-overlay" id="modal-auth">
-      <div class="modal-content" style="max-width: 480px;">
-        <div class="modal-header">
-          <h3 class="modal-title">
-            <i class="fa-solid ${isLogin ? 'fa-arrow-right-to-bracket' : 'fa-user-plus'}" style="color: var(--text-main);"></i>
-            ${isLogin ? (isAdminLogin ? 'Connexion Administration' : 'Connexion Élève') : 'Créer mon Compte Élève'}
-          </h3>
-          <button class="modal-close" id="btn-close-auth"><i class="fa-solid fa-xmark"></i></button>
+      <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header" style="display: flex; flex-direction: column; align-items: flex-start;">
+          <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+            <h3 class="modal-title" style="margin: 0;">
+              <i class="fa-solid ${isLogin ? 'fa-arrow-right-to-bracket' : 'fa-user-plus'}" style="color: var(--text-main);"></i>
+              ${isLogin ? (isAdminLogin ? 'Connexion Administration' : 'Connexion Élève') : 'Créer mon Compte Élève'}
+            </h3>
+            <button class="modal-close" id="btn-close-auth"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          ${!isLogin ? `
+            <div style="font-size: 0.92rem; color: #D96B43; font-weight: 700; margin-top: 0.4rem; background: #FDEEE9; padding: 0.4rem 0.85rem; border-radius: var(--radius-full); border: 1px solid #F8D7CC;">
+              <i class="fa-solid fa-bell"></i> Ne rate rien. On te tient informé.
+            </div>
+          ` : ''}
         </div>
 
         <div class="modal-body">
@@ -29,15 +36,21 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
                 <label class="form-label">Nom et Prénom *</label>
                 <input type="text" class="form-control" id="auth-name" placeholder="ex: Sarah Dupont" required>
               </div>
+
               <div class="grid-2">
                 <div class="form-group">
-                  <label class="form-label">Séminaire en Israël *</label>
-                  <input type="text" class="form-control" id="auth-seminary" placeholder="ex: Bnot Yaakov" required>
+                  <label class="form-label">Date de Naissance *</label>
+                  <input type="date" class="form-control" id="auth-birthdate" required>
                 </div>
                 <div class="form-group">
                   <label class="form-label">Téléphone / WhatsApp *</label>
                   <input type="text" class="form-control" id="auth-phone" placeholder="+33 6 12 34 56 78" required>
                 </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Séminaire en Israël *</label>
+                <input type="text" class="form-control" id="auth-seminary" placeholder="ex: Bnot Yaakov" required>
               </div>
             ` : ''}
 
@@ -98,11 +111,12 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
       }
     } else {
       const name = document.getElementById('auth-name').value;
+      const birthdate = document.getElementById('auth-birthdate')?.value || '';
       const seminary = document.getElementById('auth-seminary').value;
       const phone = document.getElementById('auth-phone').value;
 
       const res = Auth.register({
-        name, email, password, seminary, phone
+        name, email, password, seminary, phone, birthdate
       });
 
       if (res.success) {
@@ -111,6 +125,8 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
           name: name,
           email: email,
           phone: phone,
+          birth_date: birthdate,
+          seminary: seminary,
           role: 'SEMINARISTE'
         });
 
