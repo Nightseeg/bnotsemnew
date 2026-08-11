@@ -1,5 +1,5 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - HOME PAGE VIEW (KOUPAT HOLIM BIENTÔT DISPONIBLE)
+   BNOT SÉMINAIRE - HOME PAGE VIEW (WARM BEIGE-PINK GRADIENT HERO)
    ========================================================================== */
 
 import { Storage } from '../storage.js';
@@ -7,14 +7,19 @@ import { Storage } from '../storage.js';
 export function renderHomeView(onNavigate, onOpenAuthModal) {
   const html = `
     <div class="home-view">
-      <!-- SECTION 1: HERO SECTION -->
-      <div style="padding: 2.5rem 0 4rem; margin-bottom: 3.5rem;">
-        <div style="display: grid; grid-template-columns: 1.2fr 0.9fr; gap: 3rem; align-items: center;">
+      <!-- SECTION 1: HERO SECTION (WARM BEIGE TO LIGHT PINK GRADIENT BACKGROUND) -->
+      <div style="background: linear-gradient(135deg, #FAF4EE 0%, #FDF0EC 45%, #FCE8E2 100%); border-radius: 32px; padding: 3.5rem 2.5rem 4rem; margin-bottom: 3.5rem; border: 1px solid rgba(232, 93, 4, 0.08); box-shadow: 0 10px 30px rgba(249, 115, 22, 0.04); position: relative; overflow: hidden;">
+        
+        <!-- Subtle Decorative Background Glow Spheres -->
+        <div style="position: absolute; top: -50px; left: -50px; width: 220px; height: 220px; background: rgba(253, 238, 233, 0.7); border-radius: 50%; filter: blur(50px); pointer-events: none;"></div>
+        <div style="position: absolute; bottom: -60px; right: -40px; width: 260px; height: 260px; background: rgba(255, 240, 245, 0.8); border-radius: 50%; filter: blur(60px); pointer-events: none;"></div>
+
+        <div style="display: grid; grid-template-columns: 1.2fr 0.9fr; gap: 3rem; align-items: center; position: relative; z-index: 1;">
           
           <!-- LEFT COLUMN -->
           <div>
             <!-- Pill Badge Top -->
-            <div style="display: inline-block; background: #FDEEE9; color: #D96B43; border: 1px solid #F8D7CC; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; padding: 0.35rem 1.1rem; border-radius: var(--radius-full); text-transform: uppercase; margin-bottom: 1.5rem;">
+            <div style="display: inline-block; background: rgba(253, 238, 233, 0.9); color: #D96B43; border: 1px solid #F8D7CC; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; padding: 0.35rem 1.1rem; border-radius: var(--radius-full); text-transform: uppercase; margin-bottom: 1.5rem;">
               FRANCE - ISRAËL
             </div>
 
@@ -34,7 +39,7 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
                 Préparer mon arrivée
               </button>
 
-              <button class="btn btn-outline-pill" id="btn-hero-boutique" style="padding: 0.85rem 1.8rem; font-weight: 700;">
+              <button class="btn btn-outline-pill" id="btn-hero-boutique" style="padding: 0.85rem 1.8rem; font-weight: 700; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px);">
                 Découvrir la boutique
               </button>
             </div>
@@ -42,14 +47,14 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
 
           <!-- RIGHT COLUMN: FLOATING CARD -->
           <div>
-            <div style="background: var(--bg-card); border-radius: 24px; padding: 2rem 1.8rem; box-shadow: 0 12px 40px rgba(65, 58, 74, 0.08); border: 1px solid var(--border-color);">
+            <div style="background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(12px); border-radius: 24px; padding: 2rem 1.8rem; box-shadow: 0 16px 45px rgba(65, 58, 74, 0.08); border: 1px solid rgba(255, 255, 255, 0.8);">
               <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 1.5rem;">
                 Parcours nouvelle arrivante
               </h3>
 
               <div style="display: flex; flex-direction: column; gap: 0.9rem;">
                 <!-- Row 1: Visa -->
-                <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-main); border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 16px;">
                   <span style="font-weight: 700; font-size: 0.92rem; color: var(--text-main);">Visa étudiant</span>
                   <button class="btn-hero-tag" id="btn-card-visa-nav" style="background: #FDF2EE; color: #E85D04; border: 1px solid #FCD7C6; padding: 0.3rem 0.9rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.8rem;">
                     Formulaire
@@ -57,7 +62,7 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
                 </div>
 
                 <!-- Row 2: Koupat Holim (Bientôt disponible) -->
-                <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-main); border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 16px;">
                   <span style="font-weight: 700; font-size: 0.92rem; color: var(--text-main);">Koupat Holim</span>
                   <span style="background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; padding: 0.3rem 0.9rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.78rem;">
                     <i class="fa-solid fa-clock"></i> Bientôt disponible
@@ -65,7 +70,7 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
                 </div>
 
                 <!-- Row 3: ETA-IL -->
-                <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-main); border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 16px;">
                   <span style="font-weight: 700; font-size: 0.92rem; color: var(--text-main);">ETA-IL</span>
                   <a href="https://israel-entry.piba.gov.il/" target="_blank" style="background: #EFF8FF; color: #175CD3; border: 1px solid #B2DDFF; padding: 0.3rem 0.9rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.8rem; text-decoration: none;">
                     Site officiel <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
@@ -73,7 +78,7 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
                 </div>
 
                 <!-- Row 4: Kit literie -->
-                <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-main); border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 16px;">
                   <span style="font-weight: 700; font-size: 0.92rem; color: var(--text-main);">Kit literie</span>
                   <button class="btn-hero-tag" id="btn-hero-card-boutique" style="background: #ECFDF3; color: #027A48; border: 1px solid #ABEFC6; padding: 0.3rem 0.9rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.8rem;">
                     Boutique

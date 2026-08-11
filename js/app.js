@@ -1,20 +1,20 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=2501 AUTH MODAL UPDATED)
+   BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=2601 HERO BACKGROUND UPDATED)
    ========================================================================== */
 
-import { Storage } from './storage.js?v=2501';
-import { Auth } from './auth.js?v=2501';
-import { renderNavbar } from './components/navbar.js?v=2501';
-import { renderHomeView } from './components/homeView.js?v=2501';
-import { renderServicesView } from './components/servicesView.js?v=2501';
-import { renderStudentDashboard } from './components/studentDash.js?v=2501';
-import { renderKoupatView } from './components/koupatView.js?v=2501';
-import { renderVisaView } from './components/visaView.js?v=2501';
-import { renderBoutiqueView } from './components/boutiqueView.js?v=2501';
-import { renderAdminView } from './components/adminView.js?v=2501';
-import { renderContactView } from './components/contactView.js?v=2501';
-import { showAuthModal } from './components/authModal.js?v=2501';
-import { renderCartDrawer } from './components/cartDrawer.js?v=2501';
+import { Storage } from './storage.js?v=2601';
+import { Auth } from './auth.js?v=2601';
+import { renderNavbar } from './components/navbar.js?v=2601';
+import { renderHomeView } from './components/homeView.js?v=2601';
+import { renderServicesView } from './components/servicesView.js?v=2601';
+import { renderStudentDashboard } from './components/studentDash.js?v=2601';
+import { renderKoupatView } from './components/koupatView.js?v=2601';
+import { renderVisaView } from './components/visaView.js?v=2601';
+import { renderBoutiqueView } from './components/boutiqueView.js?v=2601';
+import { renderAdminView } from './components/adminView.js?v=2601';
+import { renderContactView } from './components/contactView.js?v=2601';
+import { showAuthModal } from './components/authModal.js?v=2601';
+import { renderCartDrawer } from './components/cartDrawer.js?v=2601';
 
 let currentRoute = 'home';
 let currentSubParam = null;
