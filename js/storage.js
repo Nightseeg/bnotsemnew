@@ -229,6 +229,11 @@ export const Storage = {
     localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify(cart));
   },
 
+  getCartCount() {
+    const cart = this.getCart();
+    return cart.reduce((total, item) => total + (item.quantity || 1), 0);
+  },
+
   addToCart(product, quantity = 1) {
     const cart = this.getCart();
     const existingIndex = cart.findIndex(item => item.productId === product.id);
