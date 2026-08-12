@@ -93,6 +93,18 @@ export function renderAdminView(onNavigate, subTab) {
     });
 
     bindTabEventListeners(activeAdminTab, users, reservations, products, onNavigate);
+
+    // Automatic live sync polling every 10 seconds for admin view
+    if (window._adminSyncTimer) clearInterval(window._adminSyncTimer);
+    window._adminSyncTimer = setInterval(async () => {
+      if (document.querySelector('.admin-view')) {
+        await Storage.syncFromSupabase();
+        cachedRequests = (await SupabaseApi.getRequests()) || [];
+      } else {
+        clearInterval(window._adminSyncTimer);
+        window._adminSyncTimer = null;
+      }
+    }, 10000);
   }, 0);
 
   return html;

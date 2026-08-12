@@ -75,14 +75,10 @@ function navigateTo(route, subParam = null) {
   renderApp();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Background non-blocking sync from Supabase
-  if (route === 'boutique' || route === 'my-reservations') {
-    Storage.syncFromSupabase().then(() => {
-      if (currentRoute === 'boutique' || currentRoute === 'my-reservations') {
-        renderApp();
-      }
-    });
-  }
+  // Background non-blocking sync from Supabase on any route
+  Storage.syncFromSupabase().then(() => {
+    renderApp();
+  });
 }
 
 function renderApp() {
@@ -253,6 +249,7 @@ window.addEventListener('open-cart-drawer', () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   await Storage.init();
+  await Storage.syncFromSupabase();
   document.documentElement.setAttribute('data-theme', 'light');
   renderApp();
 });
