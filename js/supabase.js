@@ -201,21 +201,39 @@ export const SupabaseApi = {
 
       if (error) return null;
 
-      return data.map(o => ({
-        id: o.id.substring(0, 8),
-        full_id: o.id,
-        userName: o.customer_name || 'Élève',
-        userEmail: o.customer_email || '',
-        userPhone: o.customer_phone || '',
-        userSeminary: o.school || 'Séminaire Non Spécifié',
-        items: o.items || [],
-        totalPrice: parseFloat(o.total_amount) || 0,
-        currency: '₪',
-        deliveryOption: 'Livraison au séminaire',
-        deliveryDate: new Date(o.created_at).toISOString().split('T')[0],
-        status: o.status === 'pending' ? 'En attente' : (o.status === 'validated' ? 'Validée' : o.status),
-        createdAt: new Date(o.created_at).toISOString().replace('T', ' ').substring(0, 16)
-      }));
+      return data.map(o => {
+        const rawItems = o.items || [];
+        let meta = {};
+        if (Array.isArray(rawItems)) {
+          const metaObj = rawItems.find(i => i && i._meta);
+          if (metaObj && metaObj._meta) meta = metaObj._meta;
+        }
+
+        const itemsList = Array.isArray(rawItems) ? rawItems.filter(i => i && i.name) : [];
+
+        let formattedDateTime = '';
+        if (o.created_at) {
+          const d = new Date(o.created_at);
+          formattedDateTime = d.toLocaleDateString('fr-FR') + ' ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        return {
+          id: o.id.substring(0, 8),
+          full_id: o.id,
+          userName: o.customer_name || 'Élève',
+          userEmail: o.customer_email || '',
+          userPhone: o.customer_phone || '',
+          userSeminary: o.school || 'Séminaire Non Spécifié',
+          items: itemsList,
+          totalPrice: parseFloat(o.total_amount) || 0,
+          currency: '₪',
+          deliveryOption: meta.deliveryOption || 'Livraison directe au séminaire',
+          deliveryDate: meta.deliveryDate || '',
+          note: meta.note || '',
+          status: o.status === 'pending' ? 'En attente' : (o.status === 'validated' ? 'Validée' : o.status),
+          createdAt: formattedDateTime || (o.created_at ? new Date(o.created_at).toISOString().replace('T', ' ').substring(0, 16) : '')
+        };
+      });
     } catch (e) {
       return null;
     }
@@ -224,6 +242,24 @@ export const SupabaseApi = {
   async createOrder(orderData) {
     if (!supabase) return null;
     try {
+      const itemsPayload = (orderData.items || []).map(i => ({
+        productId: i.productId,
+        name: i.name,
+        price: i.price,
+        quantity: i.quantity,
+        selectedSize: i.selectedSize || null,
+        currency: i.currency || '₪'
+      }));
+
+      // Store metadata inside jsonb items array
+      itemsPayload.push({
+        _meta: {
+          deliveryOption: orderData.deliveryOption || 'Livraison directe au séminaire',
+          deliveryDate: orderData.deliveryDate || '',
+          note: orderData.note || ''
+        }
+      });
+
       const { data, error } = await supabase
         .from('orders')
         .insert([{
@@ -231,7 +267,7 @@ export const SupabaseApi = {
           customer_email: orderData.userEmail || '',
           customer_phone: orderData.userPhone || '',
           school: orderData.userSeminary || '',
-          items: orderData.items || [],
+          items: itemsPayload,
           total_amount: orderData.totalPrice || 0,
           status: 'pending'
         }])

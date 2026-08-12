@@ -252,7 +252,10 @@ export const Storage = {
       userPhone: newRes.userPhone || '',
       userSeminary: newRes.userSeminary || '',
       items: cleanItems,
-      totalPrice: newRes.totalPrice || 0
+      totalPrice: newRes.totalPrice || 0,
+      deliveryOption: newRes.deliveryOption || 'Livraison directe au séminaire',
+      deliveryDate: newRes.deliveryDate || '',
+      note: newRes.note || ''
     });
 
     // Re-sync orders from Supabase to get the fresh list including the new order

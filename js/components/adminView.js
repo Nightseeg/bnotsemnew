@@ -294,14 +294,20 @@ function renderGirlsTab(users, reservations) {
 function renderReservationsTab(reservations) {
   return `
     <div class="card">
-      <h3 class="section-title"><i class="fa-solid fa-boxes-stacked"></i> Commandes & Réservations (Table orders)</h3>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h3 class="section-title" style="margin: 0;"><i class="fa-solid fa-boxes-stacked"></i> Commandes & Réservations (Table orders)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.25rem 0 0;">Retrouvez l'ensemble des détails : date & heure précises, coordonnées client, séminaire, date de livraison souhaitée, remarques et récapitulatif des articles.</p>
+        </div>
+      </div>
+
       <div class="table-responsive">
         <table class="table">
           <thead>
             <tr>
-              <th>ID Commande</th>
-              <th>Élève</th>
-              <th>Séminaire</th>
+              <th>ID & Date / Heure</th>
+              <th>Réservation effectuée par</th>
+              <th>Livraison / Retrait</th>
               <th>Articles Commandés</th>
               <th>Montant Total</th>
               <th>Statut Supabase</th>
@@ -313,15 +319,37 @@ function renderReservationsTab(reservations) {
               <tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">Aucune commande enregistrée pour l'instant. Les commandes passées sur la boutique apparaîtront ici en direct.</td></tr>
             ` : reservations.map(res => `
               <tr>
-                <td><strong>#${res.id}</strong><br><span style="font-size: 0.75rem; color: var(--text-muted);">${res.createdAt}</span></td>
-                <td><strong>${res.userName}</strong><br><span style="font-size: 0.78rem; color: var(--text-muted);">${res.userPhone || res.userEmail}</span></td>
-                <td>${res.userSeminary}</td>
                 <td>
-                  <ul style="padding-left: 1rem; font-size: 0.85rem;">
-                    ${res.items.map(i => `<li>${i.name} (x${i.quantity || 1})</li>`).join('')}
-                  </ul>
+                  <strong>#${res.id}</strong><br>
+                  <span style="font-size: 0.78rem; color: var(--text-muted); display: inline-flex; align-items: center; gap: 0.25rem;">
+                    <i class="fa-regular fa-clock"></i> ${res.createdAt || 'N/A'}
+                  </span>
                 </td>
-                <td><strong style="color: var(--text-main); font-size: 1.1rem;">${res.totalPrice} ${res.currency || '₪'}</strong></td>
+                <td>
+                  <strong>${res.userName}</strong><br>
+                  <span style="font-size: 0.78rem; color: var(--text-muted);">📱 ${res.userPhone || 'Non renseigné'}</span><br>
+                  <span style="font-size: 0.75rem; color: var(--text-muted);">${res.userEmail || ''}</span>
+                </td>
+                <td>
+                  <div style="font-weight: 700; font-size: 0.85rem;">🏫 ${res.userSeminary || 'Séminaire'}</div>
+                  <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem;">📦 ${res.deliveryOption || 'Livraison au séminaire'}</div>
+                  ${res.deliveryDate ? `<div style="font-size: 0.75rem; color: var(--accent-1); font-weight: 700;">📅 Date: ${res.deliveryDate}</div>` : ''}
+                </td>
+                <td>
+                  <ul style="padding-left: 1rem; font-size: 0.84rem; margin-bottom: 0.25rem;">
+                    ${(res.items || []).map(i => `
+                      <li>
+                        <strong>${i.name}</strong>
+                        ${i.selectedSize ? `<span style="background: var(--accent-1-light); border: 1px solid var(--accent-1); border-radius: 4px; padding: 0 0.3rem; font-size: 0.7rem; font-weight: 700;">${i.selectedSize}</span>` : ''}
+                        (x${i.quantity || 1}) - ${(i.price || 0) * (i.quantity || 1)} ₪
+                      </li>
+                    `).join('')}
+                  </ul>
+                  ${res.note ? `<div style="font-size: 0.75rem; font-style: italic; color: var(--text-muted); background: var(--bg-main); padding: 0.2rem 0.5rem; border-radius: 6px; border: 1px dashed var(--border-color);">📝 "${res.note}"</div>` : ''}
+                </td>
+                <td>
+                  <strong style="color: var(--text-main); font-size: 1.15rem; font-family: var(--font-heading);">${res.totalPrice} ${res.currency || '₪'}</strong>
+                </td>
                 <td>
                   <select class="form-control select-change-status" data-id="${res.id}" style="padding: 0.3rem 0.5rem; font-size: 0.82rem;">
                     <option value="pending" ${res.status === 'En attente' || res.status === 'pending' ? 'selected' : ''}>pending (En attente)</option>
@@ -330,9 +358,14 @@ function renderReservationsTab(reservations) {
                   </select>
                 </td>
                 <td>
-                  <a href="https://wa.me/${(res.userPhone || '').replace(/[^0-9]/g, '')}?text=Bonjour%20${encodeURIComponent(res.userName)},%20de%20l'équipe%20Bnot%20Séminaire..." target="_blank" class="btn btn-outline-pill btn-sm">
-                    <i class="fa-brands fa-whatsapp"></i> WhatsApp
-                  </a>
+                  <div style="display: flex; flex-direction: column; gap: 0.4rem;">
+                    <button class="btn btn-outline-pill btn-sm btn-inspect-order" data-id="${res.id}" style="font-size: 0.8rem;">
+                      <i class="fa-solid fa-eye"></i> Fiche Détails
+                    </button>
+                    <a href="https://wa.me/${(res.userPhone || '').replace(/[^0-9]/g, '')}?text=Bonjour%20${encodeURIComponent(res.userName)},%20de%20l'équipe%20Bnot%20Séminaire%20concernant%20votre%20commande%20%23${res.id}..." target="_blank" class="btn btn-outline-pill btn-sm" style="font-size: 0.8rem;">
+                      <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                    </a>
+                  </div>
                 </td>
               </tr>
             `).join('')}
@@ -412,6 +445,14 @@ function renderProductsTab(products) {
 
 
 function bindTabEventListeners(tab, users, reservations, products, onNavigate) {
+  document.querySelectorAll('.btn-inspect-order').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const orderId = btn.getAttribute('data-id');
+      const res = reservations.find(r => String(r.id) === String(orderId) || String(r.full_id) === String(orderId));
+      if (res) showOrderDetailModal(res);
+    });
+  });
+
   document.querySelectorAll('.btn-view-req-detail').forEach(btn => {
     btn.addEventListener('click', () => {
       const reqId = btn.getAttribute('data-id');
@@ -1037,4 +1078,109 @@ function showGirlDetailModal(girl, reservations, onNavigate) {
   document.body.insertAdjacentHTML('beforeend', modalHtml);
   const closeModal = () => document.getElementById('modal-girl-detail')?.remove();
   document.getElementById('btn-close-girl-modal')?.addEventListener('click', closeModal);
+}
+
+function showOrderDetailModal(res) {
+  const modalHtml = `
+    <div class="modal-overlay" id="modal-order-detail">
+      <div class="modal-content" style="max-width: 750px;">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            <i class="fa-solid fa-receipt" style="color: var(--accent-1);"></i> 
+            Fiche Complète de la Commande #${res.id}
+          </h3>
+          <button class="modal-close" id="btn-close-order-modal"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        
+        <div class="modal-body" style="display: flex; flex-direction: column; gap: 1.25rem;">
+
+          <!-- Date & Statut Banner -->
+          <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 1rem 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">DATE ET HEURE DE LA DEMANDE</div>
+              <div style="font-weight: 800; font-size: 1.05rem; color: var(--text-main);">
+                <i class="fa-regular fa-clock" style="color: var(--accent-1); margin-right: 0.35rem;"></i>
+                ${res.createdAt || 'Non spécifiée'}
+              </div>
+            </div>
+            <div>
+              <span class="badge ${res.status === 'Validée' || res.status === 'validated' ? 'badge-success' : 'badge-warning'}" style="font-size: 0.9rem; padding: 0.4rem 0.9rem;">
+                ${res.status}
+              </span>
+            </div>
+          </div>
+
+          <!-- Section 1: Élève & Contact -->
+          <div style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h4 style="font-family: var(--font-heading); font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.85rem; font-weight: 800;">
+              <i class="fa-solid fa-user" style="color: var(--accent-1); margin-right: 0.4rem;"></i>
+              Réservation effectuée par :
+            </h4>
+            <div class="grid-2" style="font-size: 0.92rem; row-gap: 0.65rem;">
+              <div><strong>Nom & Prénom :</strong> ${res.userName}</div>
+              <div><strong>Email :</strong> <a href="mailto:${res.userEmail}" style="color: var(--accent-1); text-decoration: underline;">${res.userEmail || 'Non renseigné'}</a></div>
+              <div><strong>Téléphone / WhatsApp :</strong> 📱 <a href="tel:${res.userPhone}" style="font-weight: 700;">${res.userPhone || 'Non renseigné'}</a></div>
+              <div><strong>Séminaire :</strong> 🏫 ${res.userSeminary || 'Non spécifié'}</div>
+            </div>
+          </div>
+
+          <!-- Section 2: Mode de Livraison / Retrait & Date -->
+          <div style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h4 style="font-family: var(--font-heading); font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.85rem; font-weight: 800;">
+              <i class="fa-solid fa-truck-ramp-box" style="color: var(--accent-1); margin-right: 0.4rem;"></i>
+              Modalités de Livraison / Retrait
+            </h4>
+            <div style="font-size: 0.92rem; display: flex; flex-direction: column; gap: 0.65rem;">
+              <div><strong>Mode de Livraison / Retrait :</strong> ${res.deliveryOption || 'Livraison directe au séminaire'}</div>
+              <div><strong>Date de livraison / retrait souhaitée :</strong> 📅 <strong>${res.deliveryDate || 'Non renseignée'}</strong></div>
+              <div>
+                <strong>Remarques ou instructions particulières :</strong><br>
+                <div style="background: var(--bg-main); padding: 0.75rem 1rem; border-radius: 10px; border: 1px dashed var(--border-color); margin-top: 0.35rem; font-style: italic; color: var(--text-muted);">
+                  ${res.note || 'Aucune remarque transmise.'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Récapitulatif des articles -->
+          <div style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <h4 style="font-family: var(--font-heading); font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.85rem; font-weight: 800;">
+              <i class="fa-solid fa-boxes-packing" style="color: var(--accent-1); margin-right: 0.4rem;"></i>
+              Récapitulatif des articles (${(res.items || []).length})
+            </h4>
+            <div style="display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem;">
+              ${(res.items || []).map(i => `
+                <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 0.75rem 1rem; border-radius: 12px; border: 1px solid var(--border-color); font-size: 0.9rem;">
+                  <div>
+                    <strong>${i.name}</strong>
+                    ${i.selectedSize ? `<span style="background: var(--accent-1-light); border: 1px solid var(--accent-1); border-radius: 6px; padding: 0.1rem 0.45rem; font-size: 0.75rem; font-weight: 700; margin-left: 0.4rem;">Taille: ${i.selectedSize}</span>` : ''}
+                    <span style="color: var(--text-muted); margin-left: 0.4rem;">(x${i.quantity || 1})</span>
+                  </div>
+                  <strong style="font-size: 1rem; color: var(--text-main);">${(i.price || 0) * (i.quantity || 1)} ₪</strong>
+                </div>
+              `).join('')}
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 2px solid var(--border-color); padding-top: 0.85rem; margin-top: 0.5rem;">
+              <span style="font-size: 1.05rem; font-weight: 800; color: var(--text-main);">Montant Total Réservé :</span>
+              <strong style="font-size: 1.4rem; font-family: var(--font-heading); color: var(--accent-1);">${res.totalPrice} ₪</strong>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+          <a href="https://wa.me/${(res.userPhone || '').replace(/[^0-9]/g, '')}?text=Bonjour%20${encodeURIComponent(res.userName)},%20concernant%20votre%20réservation%20de%20boutique%20%23${res.id}..." target="_blank" class="btn btn-outline-pill">
+            <i class="fa-brands fa-whatsapp"></i> Contacter par WhatsApp
+          </a>
+          <button class="btn btn-secondary" id="btn-modal-close-bottom">Fermer</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  const closeModal = () => document.getElementById('modal-order-detail')?.remove();
+  document.getElementById('btn-close-order-modal')?.addEventListener('click', closeModal);
+  document.getElementById('btn-modal-close-bottom')?.addEventListener('click', closeModal);
 }
