@@ -143,6 +143,12 @@ function renderProductCard(prod) {
   const hasSizes = sizes.length > 0;
   const pricedSizes = sizes.filter(s => s.price !== null && s.price !== undefined && s.price !== '' && !isNaN(s.price));
   const minPrice = pricedSizes.length > 0 ? Math.min(...pricedSizes.map(s => parseFloat(s.price))) : prod.price;
+  const hasPricedSizes = pricedSizes.length > 0;
+
+  const images = (prod.images && Array.isArray(prod.images) && prod.images.length > 0)
+    ? prod.images
+    : (prod.image ? [prod.image] : ['https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80']);
+  const mainImage = images[0] || 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80';
 
   return `
     <div class="product-card">
