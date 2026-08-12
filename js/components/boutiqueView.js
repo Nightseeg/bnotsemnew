@@ -152,11 +152,13 @@ function renderProductCard(prod) {
 
   return `
     <div class="product-card">
-      <div class="product-image-wrap">
+      <div class="product-image-wrap" data-open-detail="${prod.id}" style="cursor: pointer;">
         <img src="${mainImage}" alt="${prod.title || prod.name}" class="product-image" id="main-img-${prod.id}" loading="lazy">
-        <span class="badge ${isOutOfStock ? 'badge-danger' : 'badge-success'}" style="position: absolute; top: 10px; left: 10px; box-shadow: var(--shadow-sm);">
-          ${isOutOfStock ? '\ud83d\udd34 Rupture' : '\ud83d\udfe2 Disponible'}
-        </span>
+        ${isOutOfStock ? `
+          <span class="badge badge-danger" style="position: absolute; top: 10px; left: 10px; box-shadow: var(--shadow-sm);">
+            🔴 Rupture
+          </span>
+        ` : ''}
       </div>
 
       ${images.length > 1 ? `
@@ -177,7 +179,8 @@ function renderProductCard(prod) {
       ` : ''}
 
       <div class="product-details">
-        <div class="product-title">${prod.title || prod.name}</div>
+        <div class="product-title" data-open-detail="${prod.id}" style="cursor: pointer; transition: color 0.15s ease;" onmouseover="this.style.color='var(--accent-1)'" onmouseout="this.style.color='var(--text-main)'">${prod.title || prod.name}</div>
+        ${prod.subtitle ? `<div style="font-size: 0.82rem; font-weight: 700; color: var(--accent-1); margin-top: -0.2rem; margin-bottom: 0.4rem;">${prod.subtitle}</div>` : ''}
         <div class="product-desc">${prod.description || ''}</div>
 
         ${hasSizes ? `
@@ -300,6 +303,14 @@ function bindCatalogEvents(onNavigate) {
       }
     });
   }
+
+  document.querySelectorAll('[data-open-detail]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const prodId = el.getAttribute('data-open-detail');
+      if (prodId) onNavigate('product', prodId);
+    });
+  });
 
   bindAddButtons();
 }

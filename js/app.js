@@ -11,6 +11,7 @@ import { renderStudentDashboard } from './components/studentDash.js';
 import { renderKoupatView } from './components/koupatView.js';
 import { renderVisaView } from './components/visaView.js';
 import { renderBoutiqueView } from './components/boutiqueView.js';
+import { renderProductView } from './components/productView.js';
 import { renderAdminView } from './components/adminView.js';
 import { renderContactView } from './components/contactView.js';
 import { showAuthModal } from './components/authModal.js';
@@ -111,6 +112,9 @@ function renderApp() {
       break;
     case 'boutique':
       mainContentHtml = renderBoutiqueView(navigateTo, 'catalog');
+      break;
+    case 'product':
+      mainContentHtml = renderProductView(navigateTo, currentSubParam);
       break;
     case 'my-reservations':
       mainContentHtml = renderBoutiqueView(navigateTo, 'my-reservations');

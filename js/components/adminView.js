@@ -482,6 +482,10 @@ function showEditProductModal(prod, onNavigate) {
             <label class="form-label">Titre de l'Article *</label>
             <input type="text" class="form-control" id="edit-prod-name" value="${prod.name || prod.title}" required>
           </div>
+          <div class="form-group">
+            <label class="form-label">Sous-titre (Optionnel)</label>
+            <input type="text" class="form-control" id="edit-prod-subtitle" value="${prod.subtitle || ''}" placeholder="ex: Pack 100% Coton Supérieur">
+          </div>
           <div class="grid-2">
             <div class="form-group">
               <label class="form-label">Prix (₪) *</label>
@@ -650,6 +654,7 @@ function showEditProductModal(prod, onNavigate) {
 
   document.getElementById('btn-submit-edit-prod')?.addEventListener('click', async () => {
     const name = document.getElementById('edit-prod-name').value.trim();
+    const subtitle = document.getElementById('edit-prod-subtitle').value.trim();
     const price = parseFloat(document.getElementById('edit-prod-price').value) || 0;
     const status = document.getElementById('edit-prod-status').value;
     const description = document.getElementById('edit-prod-desc').value.trim();
@@ -665,6 +670,7 @@ function showEditProductModal(prod, onNavigate) {
     await Storage.updateProduct(prod.id, {
       title: name,
       name: name,
+      subtitle: subtitle,
       price: price,
       status: status,
       image: productImages[0] || prod.image,
@@ -693,6 +699,10 @@ function showAddProductModal(onNavigate) {
           <div class="form-group">
             <label class="form-label">Titre du Produit *</label>
             <input type="text" class="form-control" id="new-prod-name" placeholder="ex: Adaptateur Universel Israël" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sous-titre (Optionnel)</label>
+            <input type="text" class="form-control" id="new-prod-subtitle" placeholder="ex: Pack 100% Coton Supérieur">
           </div>
           <div class="form-group">
             <label class="form-label">Prix (₪) *</label>
@@ -851,6 +861,7 @@ function showAddProductModal(onNavigate) {
 
   document.getElementById('btn-submit-add-prod')?.addEventListener('click', async () => {
     const name = document.getElementById('new-prod-name').value.trim();
+    const subtitle = document.getElementById('new-prod-subtitle').value.trim();
     if (!name) {
       alert('Veuillez saisir un nom de produit');
       return;
@@ -870,6 +881,7 @@ function showAddProductModal(onNavigate) {
     await Storage.addProduct({
       name: name,
       title: name,
+      subtitle: subtitle,
       price: parseFloat(document.getElementById('new-prod-price').value) || 0,
       image: finalImages[0],
       images: finalImages,

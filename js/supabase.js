@@ -62,6 +62,7 @@ export const SupabaseApi = {
           id: p.id,
           name: p.title || 'Article Séminaire',
           title: p.title || 'Article Séminaire',
+          subtitle: p.subtitle || '',
           description: p.description || 'Équipement de qualité pour votre année de séminaire.',
           price: parseFloat(p.price) || 0,
           currency: '₪',
@@ -90,6 +91,7 @@ export const SupabaseApi = {
         .from('products')
         .insert([{
           title: product.name || product.title,
+          subtitle: product.subtitle || '',
           description: product.description || '',
           price: product.price || 0,
           image: images[0] || product.image || '',
@@ -116,6 +118,7 @@ export const SupabaseApi = {
         : (productData.image ? [productData.image] : []);
       const payload = {
         title: productData.title || productData.name,
+        subtitle: productData.subtitle || '',
         price: productData.price,
         description: productData.description || '',
         status: productData.status || 'in_stock',
