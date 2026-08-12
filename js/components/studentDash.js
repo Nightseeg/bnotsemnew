@@ -43,9 +43,6 @@ export function renderStudentDashboard(onNavigate) {
             <button class="btn btn-primary" id="btn-dash-boutique">
               <i class="fa-solid fa-store"></i> Réserver mes Équipements
             </button>
-            <button class="btn btn-secondary" id="btn-dash-koupat">
-              <i class="fa-solid fa-notes-medical"></i> Ma Koupat Holim
-            </button>
           </div>
         </div>
       </div>
@@ -58,14 +55,14 @@ export function renderStudentDashboard(onNavigate) {
             <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(6, 182, 212, 0.15); color: var(--info); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
               <i class="fa-solid fa-notes-medical"></i>
             </div>
-            <span class="badge ${koupatStatusColor}">${user.koupatStatus || 'Non débuté'}</span>
+            <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-weight: 700;"><i class="fa-regular fa-clock"></i> Bientôt disponible</span>
           </div>
           <h3 style="font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 0.35rem;">Koupat Holim</h3>
           <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-            Caisse choisie : <strong style="color: var(--text-main);">${user.koupatFund ? user.koupatFund.toUpperCase() : 'Aucune sélectionnée'}</strong>
+            Démarches d'inscription assurance maladie (Koupat Holim Maccabi).
           </p>
-          <button class="btn btn-secondary btn-sm btn-full" style="margin-top: auto;" id="btn-go-koupat">
-            Gérer mon dossier Koupat <i class="fa-solid fa-arrow-right"></i>
+          <button class="btn btn-secondary btn-sm btn-full" style="margin-top: auto; opacity: 0.65; cursor: not-allowed;" disabled>
+            <i class="fa-regular fa-clock"></i> Bientôt disponible
           </button>
         </div>
 
@@ -75,20 +72,14 @@ export function renderStudentDashboard(onNavigate) {
             <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(245, 158, 11, 0.15); color: var(--warning); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
               <i class="fa-solid fa-passport"></i>
             </div>
-            <span class="badge ${visaStatusColor}">${user.visaStatus || 'À compléter'}</span>
+            <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.15); color: #d97706; font-weight: 700;"><i class="fa-regular fa-clock"></i> Bientôt disponible</span>
           </div>
           <h3 style="font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 0.35rem;">Visa Étudiant A/2</h3>
-          <div style="margin-bottom: 1rem;">
-            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.35rem; color: var(--text-muted);">
-              <span>Avancement</span>
-              <strong style="color: var(--text-main);">${user.visaProgress || 0}%</strong>
-            </div>
-            <div class="progress-container">
-              <div class="progress-bar" style="width: ${user.visaProgress || 0}%;"></div>
-            </div>
-          </div>
-          <button class="btn btn-secondary btn-sm btn-full" style="margin-top: auto;" id="btn-go-visa">
-            Voir la checklist Visa <i class="fa-solid fa-arrow-right"></i>
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+            Checklist et guide des démarches pour le visa d'études A/2.
+          </p>
+          <button class="btn btn-secondary btn-sm btn-full" style="margin-top: auto; opacity: 0.65; cursor: not-allowed;" disabled>
+            <i class="fa-regular fa-clock"></i> Bientôt disponible
           </button>
         </div>
 
