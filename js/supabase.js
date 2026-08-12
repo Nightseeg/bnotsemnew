@@ -55,6 +55,9 @@ export const SupabaseApi = {
 
       return data.map((p) => {
         const imageUrl = resolveProductImage(p);
+        const images = (p.images && Array.isArray(p.images) && p.images.length > 0)
+          ? p.images
+          : (imageUrl ? [imageUrl] : []);
         return {
           id: p.id,
           name: p.title || 'Article Séminaire',
@@ -62,7 +65,8 @@ export const SupabaseApi = {
           description: p.description || 'Équipement de qualité pour votre année de séminaire.',
           price: parseFloat(p.price) || 0,
           currency: '₪',
-          image: imageUrl,
+          image: images[0] || imageUrl,
+          images: images,
           status: p.status || 'in_stock',
           stock: p.status === 'out_of_stock' ? 0 : 25,
           available: p.status !== 'out_of_stock',
@@ -79,13 +83,17 @@ export const SupabaseApi = {
   async addProduct(product) {
     if (!supabase) return null;
     try {
+      const images = (product.images && Array.isArray(product.images) && product.images.length > 0)
+        ? product.images
+        : (product.image ? [product.image] : []);
       const { data, error } = await supabase
         .from('products')
         .insert([{
           title: product.name || product.title,
           description: product.description || '',
           price: product.price || 0,
-          image: product.image || '',
+          image: images[0] || product.image || '',
+          images: images,
           status: 'in_stock',
           sizes: product.sizes || []
         }])
@@ -103,14 +111,18 @@ export const SupabaseApi = {
   async updateProduct(id, productData) {
     if (!supabase) return false;
     try {
+      const images = (productData.images && Array.isArray(productData.images) && productData.images.length > 0)
+        ? productData.images
+        : (productData.image ? [productData.image] : []);
       const payload = {
         title: productData.title || productData.name,
         price: productData.price,
         description: productData.description || '',
         status: productData.status || 'in_stock',
-        sizes: productData.sizes || []
+        sizes: productData.sizes || [],
+        images: images,
+        image: images[0] || productData.image || ''
       };
-      if (productData.image) payload.image = productData.image;
 
       // Check if product exists in Supabase by ID
       const { data: existing } = await supabase

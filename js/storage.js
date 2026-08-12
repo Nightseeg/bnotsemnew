@@ -58,6 +58,7 @@ export const Storage = {
             title: (localP && localP.title) ? localP.title : sbP.title,
             description: (localP && localP.description) ? localP.description : sbP.description,
             image: (localP && localP.image) ? localP.image : sbP.image,
+            images: (localP && localP.images && localP.images.length > 0) ? localP.images : (sbP.images && sbP.images.length > 0 ? sbP.images : (sbP.image ? [sbP.image] : [])),
             status: (localP && localP.status) ? localP.status : sbP.status
           };
         });

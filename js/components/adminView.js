@@ -465,7 +465,9 @@ function bindTabEventListeners(tab, users, reservations, products, onNavigate) {
 }
 
 function showEditProductModal(prod, onNavigate) {
-  let uploadedImageData = prod.image;
+  let productImages = (prod.images && Array.isArray(prod.images) && prod.images.length > 0)
+    ? [...prod.images]
+    : (prod.image ? [prod.image] : []);
   const existingSizes = Array.isArray(prod.sizes) ? prod.sizes.map(s => typeof s === 'object' ? s : {name: String(s), price: null}) : [];
 
   const modalHtml = `
@@ -501,40 +503,32 @@ function showEditProductModal(prod, onNavigate) {
             <button type="button" class="btn btn-outline-pill btn-sm" id="btn-add-edit-size" style="font-size:0.82rem;"><i class="fa-solid fa-plus"></i> Ajouter une taille</button>
           </div>
 
-          <!-- Photo Upload Zone -->
+          <!-- Photo Upload & Multi-Image Gallery -->
           <div class="form-group">
-            <label class="form-label"><i class="fa-solid fa-image" style="color: var(--accent-1);"></i> Photo de l'Article</label>
+            <label class="form-label"><i class="fa-solid fa-images" style="color: var(--accent-1);"></i> Photos de l'Article (Plusieurs photos autorisées)</label>
+            <div id="edit-img-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 0.5rem; margin-bottom: 0.75rem;"></div>
             <div id="edit-img-drop-zone" style="
               border: 2px dashed var(--border-color);
               border-radius: var(--radius-md);
-              padding: 1.25rem;
+              padding: 1rem;
               text-align: center;
               cursor: pointer;
               transition: all 0.2s ease;
               background: var(--bg-main);
               position: relative;
             ">
-              <!-- Preview -->
-              <img id="img-edit-preview-el" src="${prod.image}" alt="Aperçu" style="
-                width: 100%;
-                max-height: 200px;
-                object-fit: contain;
-                border-radius: 10px;
-                margin-bottom: 0.75rem;
-                display: block;
-              ">
-              <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.5rem;">
-                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.4rem; color: var(--accent-1); display: block; margin-bottom: 0.4rem;"></i>
-                <strong>Cliquer pour choisir une photo</strong> ou glisser-déposer ici
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.3rem; color: var(--accent-1); display: block; margin-bottom: 0.3rem;"></i>
+                <strong>Cliquer pour ajouter des photos</strong> (sélection multiple) ou glisser-déposer
               </div>
               <div style="font-size: 0.75rem; color: var(--text-subtle);">JPG, PNG, WEBP acceptés</div>
-              <input type="file" id="edit-prod-file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+              <input type="file" id="edit-prod-file" accept="image/*" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label">Description</label>
-            <textarea class="form-control" id="edit-prod-desc" rows="3">${prod.description}</textarea>
+            <textarea class="form-control" id="edit-prod-desc" rows="3">${prod.description || ''}</textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -548,6 +542,48 @@ function showEditProductModal(prod, onNavigate) {
   document.body.insertAdjacentHTML('beforeend', modalHtml);
   const closeModal = () => document.getElementById('modal-edit-product')?.remove();
 
+  // Multi-image gallery renderer
+  function renderEditGallery() {
+    const galleryEl = document.getElementById('edit-img-gallery');
+    if (!galleryEl) return;
+    if (productImages.length === 0) {
+      galleryEl.innerHTML = '<div style="grid-column: 1/-1; color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 0.4rem;">Aucune photo sélectionnée</div>';
+      return;
+    }
+    galleryEl.innerHTML = productImages.map((imgUrl, i) => `
+      <div style="position: relative; border-radius: 8px; overflow: hidden; border: 2px solid ${i === 0 ? 'var(--accent-1)' : 'var(--border-color)'}; aspect-ratio: 1; background: var(--bg-card);">
+        <img src="${imgUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+        ${i === 0 ? '<span style="position: absolute; bottom: 2px; left: 2px; background: var(--accent-1); color: var(--text-main); font-size: 0.62rem; font-weight: 800; padding: 1px 4px; border-radius: 4px;">Principale</span>' : ''}
+        <button type="button" class="btn-remove-edit-img" data-idx="${i}" style="
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          background: rgba(225, 29, 72, 0.9);
+          color: #fff;
+          border: none;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          font-size: 0.65rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    `).join('');
+
+    galleryEl.querySelectorAll('.btn-remove-edit-img').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.getAttribute('data-idx'));
+        productImages.splice(idx, 1);
+        renderEditGallery();
+      });
+    });
+  }
+  renderEditGallery();
+
   // Dynamic size rows
   const sizesContainer = document.getElementById('edit-sizes-container');
   let sizesData = [...existingSizes];
@@ -556,7 +592,7 @@ function showEditProductModal(prod, onNavigate) {
     sizesContainer.innerHTML = sizesData.map((sz, i) => `
       <div style="display:flex;gap:0.5rem;align-items:center;" data-size-idx="${i}">
         <input type="text" class="form-control edit-sz-name" value="${sz.name}" placeholder="ex: 50x100 ou M" style="flex:1;min-height:40px;">
-        <input type="number" class="form-control edit-sz-price" value="${sz.price !== null && sz.price !== undefined ? sz.price : ''}" placeholder="Prix (\u20aa)" style="width:100px;min-height:40px;">
+        <input type="number" class="form-control edit-sz-price" value="${sz.price !== null && sz.price !== undefined ? sz.price : ''}" placeholder="Prix (₪)" style="width:100px;min-height:40px;">
         <button type="button" class="btn btn-secondary btn-sm edit-sz-remove" data-idx="${i}" style="color:var(--danger);min-height:40px;width:40px;"><i class="fa-solid fa-trash"></i></button>
       </div>
     `).join('');
@@ -576,23 +612,21 @@ function showEditProductModal(prod, onNavigate) {
 
   const dropZone = document.getElementById('edit-img-drop-zone');
   const fileInput = document.getElementById('edit-prod-file');
-  const previewEl = document.getElementById('img-edit-preview-el');
 
-  function handleImageFile(file) {
-    if (!file || !file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      uploadedImageData = e.target.result;
-      if (previewEl) previewEl.src = uploadedImageData;
-      if (dropZone) {
-        dropZone.style.borderColor = 'var(--accent-1)';
-        dropZone.style.background = 'var(--accent-1-light)';
-      }
-    };
-    reader.readAsDataURL(file);
+  function handleImageFiles(files) {
+    if (!files || files.length === 0) return;
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        productImages.push(e.target.result);
+        renderEditGallery();
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
-  fileInput?.addEventListener('change', (e) => handleImageFile(e.target.files[0]));
+  fileInput?.addEventListener('change', (e) => handleImageFiles(e.target.files));
 
   // Drag and drop support
   dropZone?.addEventListener('dragover', (e) => {
@@ -608,7 +642,7 @@ function showEditProductModal(prod, onNavigate) {
     e.preventDefault();
     dropZone.style.borderColor = 'var(--border-color)';
     dropZone.style.background = 'var(--bg-main)';
-    handleImageFile(e.dataTransfer.files[0]);
+    handleImageFiles(e.dataTransfer.files);
   });
 
   document.getElementById('btn-close-edit-prod-modal')?.addEventListener('click', closeModal);
@@ -633,7 +667,8 @@ function showEditProductModal(prod, onNavigate) {
       name: name,
       price: price,
       status: status,
-      image: uploadedImageData,
+      image: productImages[0] || prod.image,
+      images: productImages,
       description: description,
       sizes: sizes
     });
@@ -645,7 +680,7 @@ function showEditProductModal(prod, onNavigate) {
 }
 
 function showAddProductModal(onNavigate) {
-  let uploadedImageData = 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80';
+  let productImages = [];
 
   const modalHtml = `
     <div class="modal-overlay" id="modal-add-product">
@@ -664,33 +699,26 @@ function showAddProductModal(onNavigate) {
             <input type="number" class="form-control" id="new-prod-price" placeholder="150" value="100" required>
           </div>
 
-          <!-- Photo Upload Zone -->
+          <!-- Photo Upload & Multi-Image Gallery -->
           <div class="form-group">
-            <label class="form-label"><i class="fa-solid fa-image" style="color: var(--accent-1);"></i> Photo de l'Article</label>
+            <label class="form-label"><i class="fa-solid fa-images" style="color: var(--accent-1);"></i> Photos de l'Article (Plusieurs photos autorisées)</label>
+            <div id="new-img-gallery" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(75px, 1fr)); gap: 0.5rem; margin-bottom: 0.75rem;"></div>
             <div id="new-img-drop-zone" style="
               border: 2px dashed var(--border-color);
               border-radius: var(--radius-md);
-              padding: 1.25rem;
+              padding: 1rem;
               text-align: center;
               cursor: pointer;
               transition: all 0.2s ease;
               background: var(--bg-main);
               position: relative;
             ">
-              <img id="img-new-preview-el" src="${uploadedImageData}" alt="Aperçu" style="
-                width: 100%;
-                max-height: 200px;
-                object-fit: contain;
-                border-radius: 10px;
-                margin-bottom: 0.75rem;
-                display: block;
-              ">
-              <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.5rem;">
-                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.4rem; color: var(--accent-1); display: block; margin-bottom: 0.4rem;"></i>
-                <strong>Cliquer pour choisir une photo</strong> ou glisser-déposer ici
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.3rem; color: var(--accent-1); display: block; margin-bottom: 0.3rem;"></i>
+                <strong>Cliquer pour ajouter des photos</strong> (sélection multiple) ou glisser-déposer
               </div>
               <div style="font-size: 0.75rem; color: var(--text-subtle);">JPG, PNG, WEBP acceptés</div>
-              <input type="file" id="new-prod-file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+              <input type="file" id="new-prod-file" accept="image/*" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
             </div>
           </div>
 
@@ -716,6 +744,47 @@ function showAddProductModal(onNavigate) {
 
   document.body.insertAdjacentHTML('beforeend', modalHtml);
   const closeModal = () => document.getElementById('modal-add-product')?.remove();
+
+  function renderNewGallery() {
+    const galleryEl = document.getElementById('new-img-gallery');
+    if (!galleryEl) return;
+    if (productImages.length === 0) {
+      galleryEl.innerHTML = '<div style="grid-column: 1/-1; color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 0.4rem;">Aucune photo sélectionnée</div>';
+      return;
+    }
+    galleryEl.innerHTML = productImages.map((imgUrl, i) => `
+      <div style="position: relative; border-radius: 8px; overflow: hidden; border: 2px solid ${i === 0 ? 'var(--accent-1)' : 'var(--border-color)'}; aspect-ratio: 1; background: var(--bg-card);">
+        <img src="${imgUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+        ${i === 0 ? '<span style="position: absolute; bottom: 2px; left: 2px; background: var(--accent-1); color: var(--text-main); font-size: 0.62rem; font-weight: 800; padding: 1px 4px; border-radius: 4px;">Principale</span>' : ''}
+        <button type="button" class="btn-remove-new-img" data-idx="${i}" style="
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          background: rgba(225, 29, 72, 0.9);
+          color: #fff;
+          border: none;
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          font-size: 0.65rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    `).join('');
+
+    galleryEl.querySelectorAll('.btn-remove-new-img').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.getAttribute('data-idx'));
+        productImages.splice(idx, 1);
+        renderNewGallery();
+      });
+    });
+  }
+  renderNewGallery();
 
   // Dynamic size rows
   const sizesContainer = document.getElementById('new-sizes-container');
@@ -745,23 +814,21 @@ function showAddProductModal(onNavigate) {
 
   const dropZone = document.getElementById('new-img-drop-zone');
   const fileInput = document.getElementById('new-prod-file');
-  const previewEl = document.getElementById('img-new-preview-el');
 
-  function handleImageFile(file) {
-    if (!file || !file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      uploadedImageData = e.target.result;
-      if (previewEl) previewEl.src = uploadedImageData;
-      if (dropZone) {
-        dropZone.style.borderColor = 'var(--accent-1)';
-        dropZone.style.background = 'var(--accent-1-light)';
-      }
-    };
-    reader.readAsDataURL(file);
+  function handleImageFiles(files) {
+    if (!files || files.length === 0) return;
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        productImages.push(e.target.result);
+        renderNewGallery();
+      };
+      reader.readAsDataURL(file);
+    });
   }
 
-  fileInput?.addEventListener('change', (e) => handleImageFile(e.target.files[0]));
+  fileInput?.addEventListener('change', (e) => handleImageFiles(e.target.files));
 
   dropZone?.addEventListener('dragover', (e) => {
     e.preventDefault();
@@ -776,7 +843,7 @@ function showAddProductModal(onNavigate) {
     e.preventDefault();
     dropZone.style.borderColor = 'var(--border-color)';
     dropZone.style.background = 'var(--bg-main)';
-    handleImageFile(e.dataTransfer.files[0]);
+    handleImageFiles(e.dataTransfer.files);
   });
 
   document.getElementById('btn-close-prod-modal')?.addEventListener('click', closeModal);
@@ -792,16 +859,20 @@ function showAddProductModal(onNavigate) {
     const sizeRows = document.querySelectorAll('#new-sizes-container [data-size-idx]');
     const sizes = [];
     sizeRows.forEach(row => {
-      const name = row.querySelector('.new-sz-name').value.trim();
-      const priceVal = row.querySelector('.new-sz-price').value.trim();
+      const name = row.querySelector('.edit-sz-name, .new-sz-name').value.trim();
+      const priceVal = row.querySelector('.edit-sz-price, .new-sz-price').value.trim();
       if (name) sizes.push({ name, price: priceVal !== '' ? parseFloat(priceVal) : null });
     });
+
+    const defaultImg = 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80';
+    const finalImages = productImages.length > 0 ? productImages : [defaultImg];
 
     await Storage.addProduct({
       name: name,
       title: name,
       price: parseFloat(document.getElementById('new-prod-price').value) || 0,
-      image: uploadedImageData,
+      image: finalImages[0],
+      images: finalImages,
       description: document.getElementById('new-prod-desc').value.trim() || 'Article de qualité pour le séminaire.',
       sizes: sizes
     });

@@ -143,14 +143,36 @@ function renderProductCard(prod) {
   const hasSizes = sizes.length > 0;
   const hasPricedSizes = hasSizes && sizes.some(s => s.price !== null && s.price !== undefined);
 
+  const images = (prod.images && Array.isArray(prod.images) && prod.images.length > 0)
+    ? prod.images
+    : (prod.image ? [prod.image] : []);
+  const mainImage = images[0] || 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80';
+
   return `
     <div class="product-card">
       <div class="product-image-wrap">
-        <img src="${prod.image}" alt="${prod.title || prod.name}" class="product-image" loading="lazy">
+        <img src="${mainImage}" alt="${prod.title || prod.name}" class="product-image" id="main-img-${prod.id}" loading="lazy">
         <span class="badge ${isOutOfStock ? 'badge-danger' : 'badge-success'}" style="position: absolute; top: 10px; left: 10px; box-shadow: var(--shadow-sm);">
           ${isOutOfStock ? '\ud83d\udd34 Rupture' : '\ud83d\udfe2 Disponible'}
         </span>
       </div>
+
+      ${images.length > 1 ? `
+        <div style="display: flex; gap: 0.35rem; padding: 0.5rem 0.75rem; background: var(--bg-main); border-bottom: 1px solid var(--border-color); overflow-x: auto;">
+          ${images.map((imgUrl, idx) => `
+            <img src="${imgUrl}" class="thumb-img-btn" data-product-id="${prod.id}" data-img-url="${imgUrl}" style="
+              width: 40px;
+              height: 40px;
+              object-fit: cover;
+              border-radius: 6px;
+              cursor: pointer;
+              border: 2px solid ${idx === 0 ? 'var(--accent-1)' : 'transparent'};
+              opacity: ${idx === 0 ? '1' : '0.65'};
+              transition: all 0.15s ease;
+            ">
+          `).join('')}
+        </div>
+      ` : ''}
 
       <div class="product-details">
         <div class="product-title">${prod.title || prod.name}</div>
@@ -281,6 +303,26 @@ function bindCatalogEvents(onNavigate) {
 }
 
 function bindAddButtons() {
+  // Thumbnail switching for multi-image products
+  document.querySelectorAll('.thumb-img-btn').forEach(thumb => {
+    thumb.addEventListener('click', () => {
+      const prodId = thumb.getAttribute('data-product-id');
+      const imgUrl = thumb.getAttribute('data-img-url');
+      const mainImg = document.getElementById(`main-img-${prodId}`);
+      if (mainImg) mainImg.src = imgUrl;
+
+      const container = thumb.parentElement;
+      if (container) {
+        container.querySelectorAll('.thumb-img-btn').forEach(t => {
+          t.style.borderColor = 'transparent';
+          t.style.opacity = '0.65';
+        });
+        thumb.style.borderColor = 'var(--accent-1)';
+        thumb.style.opacity = '1';
+      }
+    });
+  });
+
   // Size button selection highlight + price update
   document.querySelectorAll('.size-selector').forEach(selector => {
     const productId = selector.getAttribute('data-product-id');
