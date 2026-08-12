@@ -23,11 +23,11 @@ export function renderNavbar(currentRoute, onNavigate, onOpenCart, onOpenAuthMod
     }
   }
 
-  // Faire un don, Binyan Adei Ad, and Contact last
+  // Faire un don, Binian Adei Ad, and Contact last
   const allNavItems = [
     ...baseNavItems,
     { type: 'external', href: 'https://toratyaacov.fr', label: 'Faire un don' },
-    { type: 'external', href: 'https://www.binianadeiad.com/', label: 'Binyan Adei Ad' },
+    { type: 'external', href: 'https://www.binianadeiad.com/', label: 'Binian Adei Ad' },
     { type: 'internal', route: 'contact', label: 'Contact', icon: 'fa-paper-plane' }
   ];
 

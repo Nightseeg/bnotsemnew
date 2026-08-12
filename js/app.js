@@ -168,7 +168,7 @@ function renderApp() {
           <h4 style="font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 1.2rem;">Dons & Partenaires</h4>
           <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; color: #CBD5E1;">
             <li><a href="https://toratyaacov.fr" target="_blank" rel="noopener noreferrer" style="color: #CBD5E1;"><i class="fa-solid fa-heart" style="color: #F97316; margin-right: 0.4rem;"></i> Faire un don</a></li>
-            <li><a href="https://www.binianadeiad.com/" target="_blank" rel="noopener noreferrer" style="color: #CBD5E1;"><i class="fa-solid fa-handshake" style="color: #F97316; margin-right: 0.4rem;"></i> Binyan Adei Ad</a></li>
+            <li><a href="https://www.binianadeiad.com/" target="_blank" rel="noopener noreferrer" style="color: #CBD5E1;"><i class="fa-solid fa-handshake" style="color: #F97316; margin-right: 0.4rem;"></i> Binian Adei Ad</a></li>
           </ul>
         </div>
 
