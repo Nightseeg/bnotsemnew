@@ -43,21 +43,29 @@ export const Storage = {
   },
 
   async syncFromSupabase() {
+    // 1. Products (Public catalog - always synced for all visitors)
     try {
-      const [sbProducts, sbOrders, sbProfiles] = await Promise.all([
-        SupabaseApi.getProducts(),
-        SupabaseApi.getOrders(),
-        SupabaseApi.getProfiles()
-      ]);
-
+      const sbProducts = await SupabaseApi.getProducts();
       if (sbProducts && sbProducts.length > 0) {
         localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(sbProducts));
       }
+    } catch (e) {
+      console.warn('Supabase sync products error:', e);
+    }
 
+    // 2. Orders (Reservations list)
+    try {
+      const sbOrders = await SupabaseApi.getOrders();
       if (sbOrders) {
         localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(sbOrders));
       }
+    } catch (e) {
+      console.warn('Supabase sync orders error:', e);
+    }
 
+    // 3. Profiles (Registered students)
+    try {
+      const sbProfiles = await SupabaseApi.getProfiles();
       if (sbProfiles && sbProfiles.length > 0) {
         const currentLocal = this.getUsers();
         const mergedUsers = [...currentLocal];
@@ -76,7 +84,7 @@ export const Storage = {
         localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(mergedUsers));
       }
     } catch (e) {
-      console.log('Supabase sync notice:', e);
+      console.warn('Supabase sync profiles error:', e);
     }
   },
 
