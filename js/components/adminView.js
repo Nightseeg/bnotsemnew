@@ -40,9 +40,14 @@ export function renderAdminView(onNavigate, subTab) {
           <p style="color: var(--text-muted);">Accès complet aux 16 articles Supabase, demandes formulaires, profils et réservations.</p>
         </div>
 
-        <button class="btn btn-outline-pill" id="btn-admin-refresh" title="Rafraîchir depuis Supabase">
-          <i class="fa-solid fa-arrows-rotate"></i> Synchroniser Supabase
-        </button>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-secondary btn-sm" id="btn-admin-back-home" style="border-radius: 20px; font-weight: 700;">
+            <i class="fa-solid fa-house"></i> Accueil
+          </button>
+          <button class="btn btn-outline-pill" id="btn-admin-refresh" title="Rafraîchir depuis Supabase">
+            <i class="fa-solid fa-arrows-rotate"></i> Synchroniser Supabase
+          </button>
+        </div>
       </div>
 
       <!-- Admin Tabs -->
@@ -76,6 +81,8 @@ export function renderAdminView(onNavigate, subTab) {
         onNavigate('admin', activeAdminTab);
       });
     });
+
+    document.getElementById('btn-admin-back-home')?.addEventListener('click', () => onNavigate('home'));
 
     document.getElementById('btn-admin-refresh')?.addEventListener('click', async () => {
       window.showToast('Synchronisation des 16 articles Supabase en cours...', 'info');

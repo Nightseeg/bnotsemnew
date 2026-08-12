@@ -7,6 +7,12 @@ import { showServiceFormModal } from './formModal.js';
 export function renderServicesView(onNavigate) {
   const html = `
     <div class="services-official-view" style="max-width: 1240px; margin: 0 auto 5rem; padding: 0 1rem;">
+      <div style="margin-bottom: 1.25rem;">
+        <button class="btn btn-secondary btn-sm" id="btn-services-back-home" style="border-radius: 20px; font-weight: 700;">
+          <i class="fa-solid fa-house"></i> Retour à l'accueil
+        </button>
+      </div>
+
       <!-- Header Banner -->
       <div style="text-align: center; margin-bottom: 3.5rem;">
         <span class="badge-pill-pink" style="margin-bottom: 0.75rem;">
@@ -162,6 +168,8 @@ export function renderServicesView(onNavigate) {
   `;
 
   setTimeout(() => {
+    document.getElementById('btn-services-back-home')?.addEventListener('click', () => onNavigate('home'));
+
     document.querySelectorAll('.btn-service-go-boutique').forEach(btn => {
       btn.addEventListener('click', () => onNavigate('boutique'));
     });

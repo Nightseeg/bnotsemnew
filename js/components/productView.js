@@ -42,10 +42,14 @@ export function renderProductView(onNavigate, productId) {
   const html = `
     <div class="product-detail-view" style="max-width: 1100px; margin: 0 auto 4rem; padding: 0 1rem;">
       
-      <!-- Breadcrumb / Back Button -->
-      <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
+      <!-- Breadcrumb / Back Buttons -->
+      <div style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: var(--text-muted); flex-wrap: wrap;">
+        <button class="btn btn-secondary btn-sm" id="btn-pd-back-home" style="border-radius: 20px; font-weight: 700;">
+          <i class="fa-solid fa-house"></i> Accueil
+        </button>
+        <span>/</span>
         <button class="btn btn-secondary btn-sm" id="btn-pd-back-top" style="border-radius: 20px; font-weight: 700;">
-          <i class="fa-solid fa-arrow-left"></i> Retour à la Boutique
+          <i class="fa-solid fa-store"></i> Boutique
         </button>
         <span>/</span>
         <span style="color: var(--text-main); font-weight: 600;">${prod.title || prod.name}</span>
@@ -183,6 +187,7 @@ export function renderProductView(onNavigate, productId) {
   `;
 
   setTimeout(() => {
+    document.getElementById('btn-pd-back-home')?.addEventListener('click', () => onNavigate('home'));
     document.getElementById('btn-pd-back-top')?.addEventListener('click', () => onNavigate('boutique'));
     document.getElementById('btn-pd-back-boutique')?.addEventListener('click', () => onNavigate('boutique'));
 

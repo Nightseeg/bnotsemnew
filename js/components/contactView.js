@@ -11,7 +11,12 @@ export function renderContactView(onNavigate) {
       <!-- HERO BANNER CONTACT (DARK NAVY GRADIENT MATCHING SCREENSHOT) -->
       <div style="background: linear-gradient(135deg, #0A192F, #0E2A47); color: white; padding: 4.5rem 2rem 5rem; border-radius: 0 0 32px 32px; margin-bottom: 4rem; position: relative; overflow: hidden;">
         <div style="max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: 1.2fr 0.8fr; align-items: center; gap: 2rem;">
-          <div>
+            <div style="margin-bottom: 1.25rem;">
+              <button class="btn btn-secondary btn-sm" id="btn-contact-back-home" style="border-radius: 20px; font-weight: 700; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3);">
+                <i class="fa-solid fa-house"></i> Retour à l'accueil
+              </button>
+            </div>
+
             <!-- Badge Top -->
             <div style="display: inline-block; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.1em; padding: 0.35rem 1.1rem; border-radius: var(--radius-full); text-transform: uppercase; margin-bottom: 1.25rem; color: #E2E8F0;">
               NOUS CONTACTER
@@ -134,6 +139,8 @@ export function renderContactView(onNavigate) {
   `;
 
   setTimeout(() => {
+    document.getElementById('btn-contact-back-home')?.addEventListener('click', () => onNavigate('home'));
+
     document.getElementById('form-contact-page')?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = document.getElementById('contact-name').value.trim();

@@ -23,6 +23,12 @@ export function renderStudentDashboard(onNavigate) {
 
   const html = `
     <div class="student-dashboard">
+      <div style="margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+        <button class="btn btn-secondary btn-sm" id="btn-dash-back-home" style="border-radius: 20px; font-weight: 700;">
+          <i class="fa-solid fa-house"></i> Retour à l'accueil
+        </button>
+      </div>
+
       <!-- Hero Banner -->
       <div class="hero-banner">
         <div class="hero-content">
@@ -165,6 +171,7 @@ export function renderStudentDashboard(onNavigate) {
   `;
 
   setTimeout(() => {
+    document.getElementById('btn-dash-back-home')?.addEventListener('click', () => onNavigate('home'));
     document.getElementById('btn-dash-boutique')?.addEventListener('click', () => onNavigate('boutique'));
     document.getElementById('btn-dash-koupat')?.addEventListener('click', () => onNavigate('koupat'));
     document.getElementById('btn-go-koupat')?.addEventListener('click', () => onNavigate('koupat'));

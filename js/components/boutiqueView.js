@@ -33,7 +33,12 @@ export function renderBoutiqueView(onNavigate, activeTab = 'catalog') {
 
   const html = `
     <div class="boutique-view" style="max-width: 1240px; margin: 0 auto 4rem;">
-      
+      <div style="margin-bottom: 1.25rem;">
+        <button class="btn btn-secondary btn-sm" id="btn-boutique-back-home" style="border-radius: 20px; font-weight: 700;">
+          <i class="fa-solid fa-house"></i> Retour à l'accueil
+        </button>
+      </div>
+
       <!-- Boutique Header Banner -->
       <div style="text-align: center; margin-bottom: 2rem;">
         <span class="badge-pill-pink" style="margin-bottom: 0.75rem;">
@@ -71,6 +76,7 @@ export function renderBoutiqueView(onNavigate, activeTab = 'catalog') {
   `;
 
   setTimeout(() => {
+    document.getElementById('btn-boutique-back-home')?.addEventListener('click', () => onNavigate('home'));
     document.getElementById('btn-tab-catalog')?.addEventListener('click', () => onNavigate('boutique'));
     document.getElementById('btn-tab-my-res')?.addEventListener('click', () => onNavigate('my-reservations'));
     document.getElementById('btn-mobile-float-cart')?.addEventListener('click', () => {
