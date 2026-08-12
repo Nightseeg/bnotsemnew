@@ -136,7 +136,11 @@ export const Storage = {
   },
 
   saveProducts(products) {
-    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+    try {
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+    } catch (e) {
+      console.warn('localStorage quota exceeded for products, keeping Supabase as source');
+    }
   },
 
   async addProduct(product) {
@@ -200,15 +204,45 @@ export const Storage = {
   },
 
   saveReservations(reservations) {
-    localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(reservations));
+    // Strip heavy base64 images from items before saving to localStorage
+    const light = reservations.map(r => ({
+      ...r,
+      items: (r.items || []).map(i => ({
+        ...i,
+        image: (i.image && i.image.startsWith('data:')) ? '' : (i.image || ''),
+        images: undefined
+      }))
+    }));
+    try {
+      localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(light));
+    } catch (e) {
+      // If still too large, keep only last 50 orders
+      try {
+        localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(light.slice(0, 50)));
+      } catch (e2) {
+        console.warn('localStorage quota exceeded for reservations, clearing old data');
+        localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify([]));
+      }
+    }
   },
 
   async addReservation(reservationData) {
+    // Strip base64 images from cart items before sending to Supabase
+    const cleanItems = (reservationData.items || []).map(i => ({
+      productId: i.productId,
+      name: i.name,
+      price: i.price,
+      quantity: i.quantity,
+      selectedSize: i.selectedSize || null,
+      currency: i.currency || '₪'
+    }));
+
     const newRes = {
       id: 'res-' + Math.floor(100 + Math.random() * 900),
       createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
       status: 'En attente',
-      ...reservationData
+      ...reservationData,
+      items: cleanItems
     };
 
     // Push to Supabase table orders FIRST
@@ -217,7 +251,7 @@ export const Storage = {
       userEmail: newRes.userEmail || reservationData.userEmail || '',
       userPhone: newRes.userPhone || '',
       userSeminary: newRes.userSeminary || '',
-      items: newRes.items || [],
+      items: cleanItems,
       totalPrice: newRes.totalPrice || 0
     });
 
@@ -226,7 +260,6 @@ export const Storage = {
     if (freshOrders) {
       this.saveReservations(freshOrders);
     } else {
-      // Fallback: save locally
       const reservations = this.getReservations();
       reservations.unshift(newRes);
       this.saveReservations(reservations);
