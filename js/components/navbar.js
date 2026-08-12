@@ -145,7 +145,7 @@ export function renderNavbar(currentRoute, onNavigate, onOpenCart, onOpenAuthMod
     document.getElementById('nav-brand-logo')?.addEventListener('click', (e) => {
       e.preventDefault();
       closeMobileMenu();
-      onNavigate(currentUser ? (currentUser.role === 'admin' ? 'admin' : 'dashboard') : 'home');
+      onNavigate('home');
     });
 
 
