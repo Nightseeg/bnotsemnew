@@ -49,7 +49,7 @@ window.showToast = function(message, type = 'info') {
   }, 3500);
 };
 
-async function navigateTo(route, subParam = null) {
+function navigateTo(route, subParam = null) {
   currentRoute = route;
   currentSubParam = subParam;
 
@@ -68,13 +68,18 @@ async function navigateTo(route, subParam = null) {
     }
   }
 
-  // For boutique routes, always sync fresh from Supabase first
-  if (route === 'boutique' || route === 'my-reservations') {
-    await Storage.syncFromSupabase();
-  }
-
+  // Render page INSTANTLY (0ms delay) from cache
   renderApp();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Background non-blocking sync from Supabase
+  if (route === 'boutique' || route === 'my-reservations') {
+    Storage.syncFromSupabase().then(() => {
+      if (currentRoute === 'boutique' || currentRoute === 'my-reservations') {
+        renderApp();
+      }
+    });
+  }
 }
 
 function renderApp() {

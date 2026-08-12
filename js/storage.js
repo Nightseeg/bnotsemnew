@@ -44,33 +44,20 @@ export const Storage = {
 
   async syncFromSupabase() {
     try {
-      const sbProducts = await SupabaseApi.getProducts();
+      const [sbProducts, sbOrders, sbProfiles] = await Promise.all([
+        SupabaseApi.getProducts(),
+        SupabaseApi.getOrders(),
+        SupabaseApi.getProfiles()
+      ]);
 
       if (sbProducts && sbProducts.length > 0) {
-        // Supabase is the direct single source of truth for all visitors
         localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(sbProducts));
-      } else {
-        // If Supabase is empty, seed it with local products
-        const localProducts = this.getProducts();
-        if (localProducts && localProducts.length > 0) {
-          for (const prod of localProducts) {
-            await SupabaseApi.addProduct(prod);
-          }
-          const fresh = await SupabaseApi.getProducts();
-          if (fresh && fresh.length > 0) {
-            localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(fresh));
-          }
-        }
       }
 
-      // Orders
-      const sbOrders = await SupabaseApi.getOrders();
       if (sbOrders) {
         localStorage.setItem(STORAGE_KEYS.RESERVATIONS, JSON.stringify(sbOrders));
       }
 
-      // Profiles
-      const sbProfiles = await SupabaseApi.getProfiles();
       if (sbProfiles && sbProfiles.length > 0) {
         const currentLocal = this.getUsers();
         const mergedUsers = [...currentLocal];
