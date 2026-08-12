@@ -14,6 +14,8 @@ const STORAGE_KEYS = {
   THEME: 'bnotsem_theme'
 };
 
+let memoryProducts = null;
+
 export const Storage = {
   async init() {
     // Purge old simulation mock data if present
@@ -32,7 +34,7 @@ export const Storage = {
     }
 
     if (!localStorage.getItem(STORAGE_KEYS.PRODUCTS)) {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
+      this.saveProducts(INITIAL_PRODUCTS);
     }
     if (!localStorage.getItem(STORAGE_KEYS.CART)) {
       localStorage.setItem(STORAGE_KEYS.CART, JSON.stringify([]));
@@ -47,7 +49,7 @@ export const Storage = {
     try {
       const sbProducts = await SupabaseApi.getProducts();
       if (sbProducts && sbProducts.length > 0) {
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(sbProducts));
+        this.saveProducts(sbProducts);
       }
     } catch (e) {
       console.warn('Supabase sync products error:', e);
@@ -140,14 +142,40 @@ export const Storage = {
 
   // Products
   getProducts() {
-    return JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS) || '[]');
+    if (memoryProducts && memoryProducts.length > 0) {
+      return memoryProducts;
+    }
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed && parsed.length > 0) {
+          memoryProducts = parsed;
+          return parsed;
+        }
+      }
+    } catch (e) {}
+    return INITIAL_PRODUCTS;
   },
 
   saveProducts(products) {
+    if (products && Array.isArray(products) && products.length > 0) {
+      memoryProducts = products;
+    }
+    // Strip heavy base64 strings (>50KB data: URLs) before saving to localStorage to prevent QuotaExceededError
+    const lightProducts = (products || []).map(p => {
+      const sanitizeImg = (src) => (src && typeof src === 'string' && src.startsWith('data:') && src.length > 50000) ? '' : src;
+      return {
+        ...p,
+        image: sanitizeImg(p.image),
+        images: Array.isArray(p.images) ? p.images.map(sanitizeImg).filter(Boolean) : []
+      };
+    });
+
     try {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(lightProducts));
     } catch (e) {
-      console.warn('localStorage quota exceeded for products, keeping Supabase as source');
+      console.warn('localStorage quota reached for products, keeping in memory cache');
     }
   },
 
