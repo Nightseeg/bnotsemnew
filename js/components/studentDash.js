@@ -12,7 +12,11 @@ export function renderStudentDashboard(onNavigate) {
     return '';
   }
 
-  const reservations = Storage.getReservations().filter(r => r.userId === user.id);
+  const userEmail = (user.email || '').toLowerCase().trim();
+  const reservations = Storage.getReservations().filter(r => 
+    (r.userId && r.userId === user.id) || 
+    (r.userEmail && userEmail && r.userEmail.toLowerCase().trim() === userEmail)
+  );
   const activeResCount = reservations.length;
 
   const koupatStatusColor = user.koupatStatus === 'Validé & Carte Prête' ? 'badge-success' : 
