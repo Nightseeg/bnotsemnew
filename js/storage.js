@@ -265,6 +265,32 @@ export const Storage = {
       this.saveReservations(reservations);
     }
 
+    // Send email notification to bnotseminaire@gmail.com via FormSubmit AJAX service
+    try {
+      const itemsList = cleanItems.map(i => `- ${i.name}${i.selectedSize ? ' (Taille: ' + i.selectedSize + ')' : ''} x${i.quantity} = ${i.price * i.quantity} ₪`).join('\n');
+      fetch('https://formsubmit.co/ajax/bnotseminaire@gmail.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: `📦 NOUVELLE RÉSERVATION - ${newRes.userName} (${newRes.totalPrice} ₪)`,
+          Client: newRes.userName,
+          Email_Client: newRes.userEmail || 'Non spécifié',
+          Telephone: newRes.userPhone || 'Non renseigné',
+          Seminaire: newRes.userSeminary || 'Non spécifié',
+          Mode_Livraison: newRes.deliveryOption || 'Livraison au séminaire',
+          Date_Livraison: newRes.deliveryDate || 'Non spécifiée',
+          Remarques: newRes.note || 'Aucune remarque',
+          Montant_Total: `${newRes.totalPrice} ₪`,
+          Articles_Reserves: itemsList
+        })
+      }).catch(err => console.warn('Notification email error:', err));
+    } catch (e) {
+      console.warn('FormSubmit dispatch error:', e);
+    }
+
     this.clearCart();
     return newRes;
   },
