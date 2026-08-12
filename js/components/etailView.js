@@ -30,7 +30,7 @@ export function renderEtailView(onNavigate) {
         </div>
       </div>
 
-      <!-- Bnei Yeshivot accompagnement -->
+      <!-- Bnot Séminaire accompagnement -->
       <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem;">
         <div style="display: flex; align-items: flex-start; gap: 1rem;">
           <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); color: #10B981; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
@@ -38,7 +38,7 @@ export function renderEtailView(onNavigate) {
           </div>
           <div>
             <h3 style="font-family: var(--font-heading); font-size: 1.1rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.3rem;">
-              Bnei Yeshivot vous accompagne gratuitement
+              Bnot Séminaire vous accompagne gratuitement
             </h3>
             <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin: 0;">
               Notre objectif est de rendre chaque démarche plus claire, plus simple et mieux suivie pour les étudiants francophones qui viennent étudier en Israël.
