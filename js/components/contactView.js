@@ -87,12 +87,12 @@ export function renderContactView(onNavigate) {
                 <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800; color: var(--text-main);">WhatsApp</h3>
               </div>
               <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem;">
-                Recevez les annonces et les prochaines activités de l'association.
+                Contactez notre équipe directement sur WhatsApp.
               </p>
-              <a href="https://wa.me/972534727103" target="_blank" style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-main); border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 14px; text-decoration: none;">
+              <a href="https://wa.me/33743766006" target="_blank" style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-main); border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 14px; text-decoration: none;">
                 <div>
-                  <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-main);">Rejoindre le groupe</div>
-                  <div style="font-size: 0.78rem; color: var(--text-muted);">Annonces et activités</div>
+                  <div style="font-weight: 700; font-size: 0.9rem; color: var(--text-main);">Discuter sur WhatsApp</div>
+                  <div style="font-size: 0.78rem; color: var(--text-muted);">+33 7 43 76 60 06</div>
                 </div>
                 <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.85rem; color: var(--text-muted);"></i>
               </a>
@@ -104,8 +104,8 @@ export function renderContactView(onNavigate) {
                 <i class="fa-solid fa-envelope" style="color: var(--accent-1); font-size: 1.2rem;"></i>
                 <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800; color: var(--text-main);">Email</h3>
               </div>
-              <a href="mailto:contact@bnotseminaire.com" style="font-weight: 800; font-size: 1rem; color: var(--text-main);">
-                contact@bnotseminaire.com
+              <a href="mailto:bnotseminaire@gmail.com" style="font-weight: 800; font-size: 1rem; color: var(--text-main);">
+                bnotseminaire@gmail.com
               </a>
             </div>
 
@@ -116,8 +116,7 @@ export function renderContactView(onNavigate) {
                 <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800; color: var(--text-main);">Téléphone</h3>
               </div>
               <div style="font-size: 0.92rem; color: var(--text-main); display: flex; flex-direction: column; gap: 0.35rem;">
-                <div>France : <strong>+33 7 67 96 71 48</strong></div>
-                <div>Israël : <strong>+972 53 472 7103</strong></div>
+                <div><strong>+33 7 43 76 60 06</strong></div>
               </div>
             </div>
 

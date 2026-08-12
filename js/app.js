@@ -183,15 +183,15 @@ function renderApp() {
           <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; color: #CBD5E1;">
             <li style="display: flex; align-items: center; gap: 0.6rem;">
               <i class="fa-brands fa-whatsapp" style="color: #F97316;"></i>
-              <a href="https://wa.me/972534727103" target="_blank" style="color: #CBD5E1;">Groupe WhatsApp</a>
+              <a href="https://wa.me/33743766006" target="_blank" style="color: #CBD5E1;">Assistance WhatsApp</a>
             </li>
             <li style="display: flex; align-items: center; gap: 0.6rem;">
               <i class="fa-solid fa-envelope" style="color: #F97316;"></i>
-              <a href="mailto:contact@bnotseminaire.com" style="color: #CBD5E1;">contact@bnotseminaire.com</a>
+              <a href="mailto:bnotseminaire@gmail.com" style="color: #CBD5E1;">bnotseminaire@gmail.com</a>
             </li>
             <li style="display: flex; align-items: center; gap: 0.6rem;">
               <i class="fa-solid fa-phone" style="color: #F97316;"></i>
-              <span>+33 7 67 96 71 48</span>
+              <a href="tel:+33743766006" style="color: #CBD5E1;">+33 7 43 76 60 06</a>
             </li>
           </ul>
         </div>
