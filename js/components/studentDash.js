@@ -35,15 +35,10 @@ export function renderStudentDashboard(onNavigate) {
           <div class="hero-tag">
             <i class="fa-solid fa-graduation-cap"></i> ${user.seminary || 'Séminaire en Israël'}
           </div>
-          <h1 class="hero-title">Shalom ${user.name.split(' ')[0]} ! 🌸</h1>
+          <h1 class="hero-title">Shalom ${user.name.split(' ')[0]} !</h1>
           <p class="hero-desc">
             Bienvenue sur votre espace personnel Bnot Séminaire. Suivez vos démarches pour votre assurance maladie (Koupat Holim), votre visa A/2 et vos équipements de séminaire.
           </p>
-          <div class="hero-actions">
-            <button class="btn btn-primary" id="btn-dash-boutique">
-              <i class="fa-solid fa-store"></i> Réserver mes Équipements
-            </button>
-          </div>
         </div>
       </div>
 
