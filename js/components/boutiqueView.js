@@ -384,16 +384,24 @@ function bindAddButtons() {
 
       if (hasSizes) {
         const selector = document.querySelector(`.size-selector[data-product-id="${prodId}"]`);
-        const selectedBtn = selector ? selector.querySelector('.btn-size[data-selected="true"]') : null;
+        let selectedBtn = selector ? selector.querySelector('.btn-size[data-selected="true"]') : null;
+        
+        // Auto-select first size if not manually selected
+        if (!selectedBtn && selector) {
+          selectedBtn = selector.querySelector('.btn-size');
+          if (selectedBtn) {
+            selectedBtn.setAttribute('data-selected', 'true');
+            selectedBtn.style.background = 'var(--accent-1)';
+            selectedBtn.style.borderColor = 'var(--accent-1)';
+            selectedBtn.style.color = 'var(--text-main)';
+          }
+        }
+
         if (!selectedBtn) {
           window.showToast('Veuillez choisir une taille avant d\'ajouter au panier.', 'warning');
-          if (selector) {
-            selector.style.outline = '2px solid var(--accent-2)';
-            selector.style.borderRadius = '8px';
-            setTimeout(() => { selector.style.outline = ''; }, 1500);
-          }
           return;
         }
+
         const selectedSize = selectedBtn.getAttribute('data-size');
         const sizePrice = selectedBtn.getAttribute('data-size-price');
         const finalPrice = (sizePrice && sizePrice !== '') ? parseFloat(sizePrice) : prod.price;
