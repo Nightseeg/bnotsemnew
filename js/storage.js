@@ -44,44 +44,22 @@ export const Storage = {
 
   async syncFromSupabase() {
     try {
-      const localProducts = this.getProducts();
       const sbProducts = await SupabaseApi.getProducts();
 
       if (sbProducts && sbProducts.length > 0) {
-        const mergedProducts = sbProducts.map(sbP => {
-          const localP = localProducts.find(lP => String(lP.id) === String(sbP.id));
-          return {
-            ...sbP,
-            sizes: (localP && localP.sizes && localP.sizes.length > 0) ? localP.sizes : (sbP.sizes || []),
-            price: (localP && localP.price !== undefined) ? localP.price : sbP.price,
-            name: (localP && localP.name) ? localP.name : sbP.name,
-            title: (localP && localP.title) ? localP.title : sbP.title,
-            description: (localP && localP.description) ? localP.description : sbP.description,
-            image: (localP && localP.image) ? localP.image : sbP.image,
-            images: (localP && localP.images && localP.images.length > 0) ? localP.images : (sbP.images && sbP.images.length > 0 ? sbP.images : (sbP.image ? [sbP.image] : [])),
-            status: (localP && localP.status) ? localP.status : sbP.status
-          };
-        });
-
-        // Also preserve any locally added products
-        localProducts.forEach(localP => {
-          if (!mergedProducts.some(mP => String(mP.id) === String(localP.id))) {
-            mergedProducts.push(localP);
+        // Supabase is the direct single source of truth for all visitors
+        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(sbProducts));
+      } else {
+        // If Supabase is empty, seed it with local products
+        const localProducts = this.getProducts();
+        if (localProducts && localProducts.length > 0) {
+          for (const prod of localProducts) {
+            await SupabaseApi.addProduct(prod);
           }
-        });
-
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(mergedProducts));
-
-        // Push any local-only products to Supabase
-        for (const prod of mergedProducts) {
-          if (!sbProducts.some(sp => String(sp.id) === String(prod.id))) {
-            await SupabaseApi.updateProduct(prod.id, prod);
+          const fresh = await SupabaseApi.getProducts();
+          if (fresh && fresh.length > 0) {
+            localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(fresh));
           }
-        }
-      } else if (localProducts && localProducts.length > 0) {
-        // Supabase is empty — push all local products to Supabase
-        for (const prod of localProducts) {
-          await SupabaseApi.updateProduct(prod.id, prod);
         }
       }
 
@@ -175,6 +153,12 @@ export const Storage = {
   },
 
   async addProduct(product) {
+    const added = await SupabaseApi.addProduct(product);
+    const freshProducts = await SupabaseApi.getProducts();
+    if (freshProducts && freshProducts.length > 0) {
+      this.saveProducts(freshProducts);
+      return freshProducts[0];
+    }
     const products = this.getProducts();
     const newProduct = {
       id: 'prod-' + Date.now(),
@@ -186,44 +170,41 @@ export const Storage = {
     };
     products.unshift(newProduct);
     this.saveProducts(products);
-
-    // Write to Supabase table products
-    await SupabaseApi.addProduct(newProduct);
     return newProduct;
   },
 
   async updateProduct(id, productData) {
-    const products = this.getProducts();
-    const idx = products.findIndex(p => p.id === id);
-    if (idx !== -1) {
-      products[idx] = { ...products[idx], ...productData };
-      this.saveProducts(products);
-
-      // Sync to Supabase
-      await SupabaseApi.updateProduct(id, productData);
+    await SupabaseApi.updateProduct(id, productData);
+    const freshProducts = await SupabaseApi.getProducts();
+    if (freshProducts && freshProducts.length > 0) {
+      this.saveProducts(freshProducts);
+    } else {
+      const products = this.getProducts();
+      const idx = products.findIndex(p => String(p.id) === String(id));
+      if (idx !== -1) {
+        products[idx] = { ...products[idx], ...productData };
+        this.saveProducts(products);
+      }
     }
   },
 
   async updateProductStatus(id, newStatus) {
-    const products = this.getProducts();
-    const idx = products.findIndex(p => p.id === id);
-    if (idx !== -1) {
-      products[idx].status = newStatus;
-      products[idx].available = newStatus !== 'out_of_stock';
-      products[idx].stock = newStatus === 'out_of_stock' ? 0 : 25;
-      this.saveProducts(products);
-
-      // Sync to Supabase
-      await SupabaseApi.updateProductStatus(id, newStatus);
+    await SupabaseApi.updateProductStatus(id, newStatus);
+    const freshProducts = await SupabaseApi.getProducts();
+    if (freshProducts && freshProducts.length > 0) {
+      this.saveProducts(freshProducts);
     }
   },
 
   async deleteProduct(id) {
-    const products = this.getProducts().filter(p => p.id !== id);
-    this.saveProducts(products);
-
-    // Delete in Supabase
     await SupabaseApi.deleteProduct(id);
+    const freshProducts = await SupabaseApi.getProducts();
+    if (freshProducts) {
+      this.saveProducts(freshProducts);
+    } else {
+      const products = this.getProducts().filter(p => String(p.id) !== String(id));
+      this.saveProducts(products);
+    }
   },
 
   // Reservations & Orders
