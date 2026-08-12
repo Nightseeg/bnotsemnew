@@ -40,12 +40,12 @@ export function renderCartDrawer(onNavigate) {
                   
                   <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem;">
                     <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(0,0,0,0.15); padding: 0.2rem 0.5rem; border-radius: var(--radius-sm);">
-                      <button class="btn-cart-qty" data-id="${item.productId}" data-action="minus" style="font-weight: 700;">-</button>
+                      <button class="btn-cart-qty" data-id="${item.productId}" data-size="${item.selectedSize || ''}" data-action="minus" style="font-weight: 700;">-</button>
                       <span style="font-size: 0.88rem; font-weight: 700;">${item.quantity}</span>
-                      <button class="btn-cart-qty" data-id="${item.productId}" data-action="plus" style="font-weight: 700;">+</button>
+                      <button class="btn-cart-qty" data-id="${item.productId}" data-size="${item.selectedSize || ''}" data-action="plus" style="font-weight: 700;">+</button>
                     </div>
 
-                    <button class="btn-cart-remove" data-id="${item.productId}" style="color: var(--danger); font-size: 0.85rem;">
+                    <button class="btn-cart-remove" data-id="${item.productId}" data-size="${item.selectedSize || ''}" style="color: var(--danger); font-size: 0.85rem;">
                       <i class="fa-solid fa-trash"></i>
                     </button>
                   </div>
@@ -91,11 +91,12 @@ export function renderCartDrawer(onNavigate) {
   document.querySelectorAll('.btn-cart-qty').forEach(btn => {
     btn.addEventListener('click', () => {
       const prodId = btn.getAttribute('data-id');
+      const size = btn.getAttribute('data-size') || null;
       const action = btn.getAttribute('data-action');
-      const item = cart.find(i => i.productId === prodId);
+      const item = cart.find(i => String(i.productId) === String(prodId) && (i.selectedSize || null) === (size || null));
       if (item) {
         const newQty = action === 'plus' ? item.quantity + 1 : item.quantity - 1;
-        Storage.updateCartQuantity(prodId, newQty);
+        Storage.updateCartQuantity(prodId, size, newQty);
         window.dispatchEvent(new CustomEvent('cart-updated'));
         renderCartDrawer(onNavigate);
       }
@@ -105,7 +106,8 @@ export function renderCartDrawer(onNavigate) {
   document.querySelectorAll('.btn-cart-remove').forEach(btn => {
     btn.addEventListener('click', () => {
       const prodId = btn.getAttribute('data-id');
-      Storage.removeFromCart(prodId);
+      const size = btn.getAttribute('data-size') || null;
+      Storage.removeFromCart(prodId, size);
       window.dispatchEvent(new CustomEvent('cart-updated'));
       renderCartDrawer(onNavigate);
     });

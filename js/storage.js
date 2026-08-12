@@ -341,17 +341,24 @@ export const Storage = {
 
   addToCart(product, quantity = 1) {
     const cart = this.getCart();
-    const existingIndex = cart.findIndex(item => String(item.productId) === String(product.id) && item.selectedSize === (product.selectedSize || null));
+    const targetId = String(product.id || product.productId || '');
+    const targetSize = product.selectedSize || null;
+
+    const existingIndex = cart.findIndex(item => 
+      String(item.productId) === targetId && 
+      (item.selectedSize || null) === targetSize
+    );
+
     if (existingIndex !== -1) {
       cart[existingIndex].quantity += quantity;
       if (product.price) cart[existingIndex].price = product.price;
     } else {
       cart.push({
-        productId: product.id,
+        productId: targetId,
         name: product.name || product.title,
         price: product.price,
-        selectedSize: product.selectedSize || null,
-        image: product.image,
+        selectedSize: targetSize,
+        image: product.image || (product.images && product.images[0]) || '',
         currency: product.currency || '₪',
         quantity: quantity
       });
@@ -360,15 +367,26 @@ export const Storage = {
     return cart;
   },
 
-  removeFromCart(productId) {
-    const cart = this.getCart().filter(item => item.productId !== productId);
+  removeFromCart(productId, selectedSize = null) {
+    const targetId = String(productId);
+    const targetSize = selectedSize || null;
+    const cart = this.getCart().filter(item => {
+      const isSameId = String(item.productId) === targetId;
+      const isSameSize = (item.selectedSize || null) === targetSize;
+      return !(isSameId && isSameSize);
+    });
     this.saveCart(cart);
     return cart;
   },
 
-  updateCartQuantity(productId, quantity) {
+  updateCartQuantity(productId, selectedSize = null, quantity = 1) {
+    const targetId = String(productId);
+    const targetSize = selectedSize || null;
     const cart = this.getCart();
-    const idx = cart.findIndex(item => item.productId === productId);
+    const idx = cart.findIndex(item => 
+      String(item.productId) === targetId && 
+      (item.selectedSize || null) === targetSize
+    );
     if (idx !== -1) {
       if (quantity <= 0) {
         cart.splice(idx, 1);
