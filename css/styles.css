@@ -154,12 +154,13 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 .nav-pill-item {
-  padding: 0.45rem 1.1rem;
+  padding: 0.4rem 0.75rem;
   border-radius: var(--radius-full);
-  font-size: 0.88rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-muted);
   transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
 .nav-pill-item:hover, .nav-pill-item.active {
