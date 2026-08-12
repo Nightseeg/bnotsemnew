@@ -35,7 +35,7 @@ export function renderCartDrawer(onNavigate) {
               <div class="cart-item">
                 <img src="${item.image}" alt="${item.name}" class="cart-item-img">
                 <div class="cart-item-details">
-                  <div class="cart-item-title">${item.name}</div>
+                  <div class="cart-item-title">${item.name}${item.selectedSize ? ` <span style="background:var(--accent-1-light);border:1px solid var(--accent-1);border-radius:6px;padding:0.1rem 0.45rem;font-size:0.72rem;font-weight:700;margin-left:0.3rem;">${item.selectedSize}</span>` : ''}</div>
                   <div class="cart-item-price">${item.price} ${item.currency || '₪'}</div>
                   
                   <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.5rem;">

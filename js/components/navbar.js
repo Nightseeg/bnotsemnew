@@ -9,29 +9,34 @@ export function renderNavbar(currentRoute, onNavigate, onOpenCart, onOpenAuthMod
   const currentUser = Auth.getCurrentUser();
   const cartCount = Storage.getCartCount();
 
-  const navItems = [
-    { route: 'home', label: 'Accueil', icon: 'fa-house' },
-    { route: 'services', label: 'Nos Services', icon: 'fa-hand-holding-heart' },
-    { route: 'boutique', label: 'Boutique', icon: 'fa-store' },
-    { route: 'contact', label: 'Contact', icon: 'fa-paper-plane' },
+  const baseNavItems = [
+    { type: 'internal', route: 'home', label: 'Accueil', icon: 'fa-house' },
+    { type: 'internal', route: 'services', label: 'Nos Services', icon: 'fa-hand-holding-heart' },
+    { type: 'internal', route: 'boutique', label: 'Boutique', icon: 'fa-store' },
   ];
 
   if (currentUser) {
     if (currentUser.role === 'admin') {
-      navItems.push({ route: 'admin', label: 'Admin', icon: 'fa-crown' });
+      baseNavItems.push({ type: 'internal', route: 'admin', label: 'Admin', icon: 'fa-crown' });
     } else {
-      navItems.push({ route: 'dashboard', label: 'Mon Espace', icon: 'fa-user-graduate' });
+      baseNavItems.push({ type: 'internal', route: 'dashboard', label: 'Mon Espace', icon: 'fa-user-graduate' });
     }
   }
+
+  // Faire un don, Binyan Adei Ad, and Contact last
+  const allNavItems = [
+    ...baseNavItems,
+    { type: 'external', href: 'https://toratyaacov.fr', label: 'Faire un don' },
+    { type: 'external', href: 'https://www.binianadeiad.com/', label: 'Binyan Adei Ad' },
+    { type: 'internal', route: 'contact', label: 'Contact', icon: 'fa-paper-plane' }
+  ];
 
   const html = `
     <header class="navbar">
       <div class="navbar-container">
         <!-- Brand Logo -->
-        <a href="#" class="brand" id="nav-brand-logo">
-          <div style="width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); display: flex; align-items: center; justify-content: center; color: var(--text-main); font-weight: 800;">
-            <i class="fa-solid fa-star" style="font-size: 1.1rem;"></i>
-          </div>
+        <a href="#" class="brand" id="nav-brand-logo" style="display: flex; align-items: center; gap: 0.6rem; text-decoration: none;">
+          <img src="assets/images/bnot_icon_transparent.png?v=2712" alt="Bnot Séminaire Logo" style="height: 48px; width: auto; object-fit: contain;">
           <div class="brand-text-container">
             <span class="brand-title">Bnot Séminaire</span>
             <span class="brand-subtitle">FRANCE - ISRAËL</span>
@@ -40,18 +45,17 @@ export function renderNavbar(currentRoute, onNavigate, onOpenCart, onOpenAuthMod
 
         <!-- Desktop Navigation Pills -->
         <nav class="nav-pill-group">
-          ${navItems.map(item => `
-            <a href="#" class="nav-pill-item ${currentRoute === item.route ? 'active' : ''}" data-route="${item.route}">
-              ${item.label}
-            </a>
-          `).join('')}
+          ${allNavItems.map(item => {
+            if (item.type === 'internal') {
+              return `<a href="#" class="nav-pill-item ${currentRoute === item.route ? 'active' : ''}" data-route="${item.route}">${item.label}</a>`;
+            } else {
+              return `<a href="${item.href}" target="_blank" rel="noopener noreferrer" class="nav-pill-item">${item.label}</a>`;
+            }
+          }).join('')}
         </nav>
 
         <!-- Right Side Nav Actions -->
         <div class="nav-actions">
-          <button class="btn-icon" id="btn-theme-toggle" title="Changer de mode (Clair/Sombre)">
-            <i class="fa-solid ${Storage.getTheme() === 'dark' ? 'fa-sun' : 'fa-moon'}"></i>
-          </button>
 
           <button class="btn-icon" id="btn-cart-toggle" title="Voir le Panier">
             <i class="fa-solid fa-cart-shopping"></i>
@@ -83,10 +87,8 @@ export function renderNavbar(currentRoute, onNavigate, onOpenCart, onOpenAuthMod
     <div class="mobile-nav-backdrop" id="mobile-backdrop"></div>
     <aside class="mobile-nav-drawer" id="mobile-drawer">
       <div class="mobile-nav-header">
-        <div class="brand">
-          <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent-1), var(--accent-2)); display: flex; align-items: center; justify-content: center; color: var(--text-main);">
-            <i class="fa-solid fa-star" style="font-size: 0.9rem;"></i>
-          </div>
+        <div class="brand" style="display: flex; align-items: center; gap: 0.5rem;">
+          <img src="assets/images/bnot_icon_transparent.png?v=2712" alt="Bnot Séminaire Logo" style="height: 38px; width: auto; object-fit: contain;">
           <span class="brand-title" style="font-size: 1.2rem;">Bnot Séminaire</span>
         </div>
         <button class="btn-icon" id="btn-close-mobile-drawer">
@@ -95,12 +97,22 @@ export function renderNavbar(currentRoute, onNavigate, onOpenCart, onOpenAuthMod
       </div>
 
       <div class="mobile-nav-links">
-        ${navItems.map(item => `
-          <a href="#" class="mobile-nav-link ${currentRoute === item.route ? 'active' : ''}" data-route="${item.route}">
-            <i class="fa-solid ${item.icon}" style="width: 24px; color: var(--text-muted);"></i>
-            <span>${item.label}</span>
-          </a>
-        `).join('')}
+        ${allNavItems.map(item => {
+          if (item.type === 'internal') {
+            return `
+              <a href="#" class="mobile-nav-link ${currentRoute === item.route ? 'active' : ''}" data-route="${item.route}">
+                <i class="fa-solid ${item.icon}" style="width: 24px; color: var(--text-muted);"></i>
+                <span>${item.label}</span>
+              </a>
+            `;
+          } else {
+            return `
+              <a href="${item.href}" target="_blank" rel="noopener noreferrer" class="mobile-nav-link" style="padding-left: 2.25rem;">
+                <span>${item.label}</span>
+              </a>
+            `;
+          }
+        }).join('')}
 
         <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 1rem;">
           ${currentUser ? `
@@ -136,13 +148,6 @@ export function renderNavbar(currentRoute, onNavigate, onOpenCart, onOpenAuthMod
       onNavigate(currentUser ? (currentUser.role === 'admin' ? 'admin' : 'dashboard') : 'home');
     });
 
-    // Theme toggle
-    document.getElementById('btn-theme-toggle')?.addEventListener('click', () => {
-      const nextTheme = Storage.getTheme() === 'dark' ? 'light' : 'dark';
-      Storage.setTheme(nextTheme);
-      document.documentElement.setAttribute('data-theme', nextTheme);
-      window.dispatchEvent(new Event('cart-updated'));
-    });
 
     // Cart toggle
     document.getElementById('btn-cart-toggle')?.addEventListener('click', () => {

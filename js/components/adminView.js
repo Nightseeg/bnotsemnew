@@ -341,8 +341,8 @@ function renderProductsTab(products) {
     <div class="card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
         <div>
-          <h3 class="section-title" style="margin: 0;"><i class="fa-solid fa-boxes-packing"></i> Catalogue des 16 Articles (Table Supabase products)</h3>
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.2rem 0 0;">Vous pouvez modifier les prix, titres, importer des photos depuis votre appareil, passer en Rupture de Stock, ou ajouter/supprimer des articles.</p>
+          <h3 class="section-title" style="margin: 0;"><i class="fa-solid fa-boxes-packing"></i> Catalogue des Articles (Table Supabase products)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.2rem 0 0;">Modifiez les prix, titres, tailles disponibles, importez des photos, passez en Rupture de Stock, ou ajoutez/supprimez des articles.</p>
         </div>
         <button class="btn btn-pink-gradient" id="btn-admin-add-product">
           <i class="fa-solid fa-plus"></i> Ajouter un Article dans Supabase
@@ -356,12 +356,16 @@ function renderProductsTab(products) {
               <th>Image</th>
               <th>Nom du Produit</th>
               <th>Prix (₪)</th>
+              <th>Tailles</th>
               <th>État du Stock (Supabase)</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            ${products.map(prod => `
+            ${products.map(prod => {
+              const sizes = Array.isArray(prod.sizes) ? prod.sizes : [];
+              const parsedSizes = sizes.length > 0 && typeof sizes[0] === 'object' ? sizes : sizes.map(s => ({name: String(s), price: null}));
+              return `
               <tr>
                 <td><img src="${prod.image}" alt="${prod.name}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid var(--border-color);"></td>
                 <td>
@@ -370,7 +374,12 @@ function renderProductsTab(products) {
                 </td>
                 <td><strong>${prod.price} ₪</strong></td>
                 <td>
-                  <select class="form-control select-prod-stock" data-id="${prod.id}" style="padding: 0.3rem 0.5rem; font-size: 0.82rem; font-weight: 700; color: ${prod.status === 'out_of_stock' ? 'var(--danger)' : 'var(--success)'};">
+                  ${parsedSizes.length > 0
+                    ? parsedSizes.map(s => `<span style="display:inline-block;background:var(--accent-1-light);border:1px solid var(--accent-1);border-radius:6px;padding:0.15rem 0.5rem;font-size:0.75rem;font-weight:700;margin:0.1rem;">${s.name}${s.price !== null && s.price !== undefined ? ` (${s.price}₪)` : ''}</span>`).join('')
+                    : '<span style="color:var(--text-subtle);font-size:0.82rem;">Aucune</span>'}
+                </td>
+                <td>
+                  <select class="form-control select-prod-stock" data-id="${prod.id}" style="padding: 0.3rem 0.5rem; font-size: 0.82rem; font-weight: 700; color: ${prod.status === 'out_of_stock' ? 'var(--danger)' : 'var(--success)'}">
                     <option value="in_stock" ${prod.status !== 'out_of_stock' ? 'selected' : ''}>🟢 En Stock (Disponible)</option>
                     <option value="out_of_stock" ${prod.status === 'out_of_stock' ? 'selected' : ''}>🔴 Rupture de Stock</option>
                   </select>
@@ -386,13 +395,14 @@ function renderProductsTab(products) {
                   </div>
                 </td>
               </tr>
-            `).join('')}
+            `}).join('')}
           </tbody>
         </table>
       </div>
     </div>
   `;
 }
+
 
 function bindTabEventListeners(tab, users, reservations, products, onNavigate) {
   document.querySelectorAll('.btn-view-req-detail').forEach(btn => {
@@ -456,6 +466,7 @@ function bindTabEventListeners(tab, users, reservations, products, onNavigate) {
 
 function showEditProductModal(prod, onNavigate) {
   let uploadedImageData = prod.image;
+  const existingSizes = Array.isArray(prod.sizes) ? prod.sizes.map(s => typeof s === 'object' ? s : {name: String(s), price: null}) : [];
 
   const modalHtml = `
     <div class="modal-overlay" id="modal-edit-product">
@@ -483,14 +494,41 @@ function showEditProductModal(prod, onNavigate) {
             </div>
           </div>
 
-          <!-- File Upload Button instead of URL input -->
+          <!-- Tailles avec Prix -->
           <div class="form-group">
-            <label class="form-label"><i class="fa-solid fa-image" style="color: var(--accent-1);"></i> Photo de l'Article (Importer une image)</label>
-            <input type="file" class="form-control" id="edit-prod-file" accept="image/*">
-            
-            <div id="edit-prod-preview" style="margin-top: 0.75rem; display: flex; align-items: center; gap: 1rem; background: var(--bg-main); padding: 0.75rem; border-radius: 12px; border: 1px solid var(--border-color);">
-              <img id="img-edit-preview-el" src="${prod.image}" alt="Aperçu" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover;">
-              <span style="font-size: 0.85rem; color: var(--text-muted);">Photo actuelle de l'article</span>
+            <label class="form-label"><i class="fa-solid fa-ruler" style="color: var(--accent-1);"></i> Tailles disponibles avec prix spécifique</label>
+            <div id="edit-sizes-container" style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:0.75rem;"></div>
+            <button type="button" class="btn btn-outline-pill btn-sm" id="btn-add-edit-size" style="font-size:0.82rem;"><i class="fa-solid fa-plus"></i> Ajouter une taille</button>
+          </div>
+
+          <!-- Photo Upload Zone -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-image" style="color: var(--accent-1);"></i> Photo de l'Article</label>
+            <div id="edit-img-drop-zone" style="
+              border: 2px dashed var(--border-color);
+              border-radius: var(--radius-md);
+              padding: 1.25rem;
+              text-align: center;
+              cursor: pointer;
+              transition: all 0.2s ease;
+              background: var(--bg-main);
+              position: relative;
+            ">
+              <!-- Preview -->
+              <img id="img-edit-preview-el" src="${prod.image}" alt="Aperçu" style="
+                width: 100%;
+                max-height: 200px;
+                object-fit: contain;
+                border-radius: 10px;
+                margin-bottom: 0.75rem;
+                display: block;
+              ">
+              <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.4rem; color: var(--accent-1); display: block; margin-bottom: 0.4rem;"></i>
+                <strong>Cliquer pour choisir une photo</strong> ou glisser-déposer ici
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-subtle);">JPG, PNG, WEBP acceptés</div>
+              <input type="file" id="edit-prod-file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
             </div>
           </div>
 
@@ -510,18 +548,67 @@ function showEditProductModal(prod, onNavigate) {
   document.body.insertAdjacentHTML('beforeend', modalHtml);
   const closeModal = () => document.getElementById('modal-edit-product')?.remove();
 
+  // Dynamic size rows
+  const sizesContainer = document.getElementById('edit-sizes-container');
+  let sizesData = [...existingSizes];
+  
+  function renderSizeRows() {
+    sizesContainer.innerHTML = sizesData.map((sz, i) => `
+      <div style="display:flex;gap:0.5rem;align-items:center;" data-size-idx="${i}">
+        <input type="text" class="form-control edit-sz-name" value="${sz.name}" placeholder="ex: 50x100 ou M" style="flex:1;min-height:40px;">
+        <input type="number" class="form-control edit-sz-price" value="${sz.price !== null && sz.price !== undefined ? sz.price : ''}" placeholder="Prix (\u20aa)" style="width:100px;min-height:40px;">
+        <button type="button" class="btn btn-secondary btn-sm edit-sz-remove" data-idx="${i}" style="color:var(--danger);min-height:40px;width:40px;"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    `).join('');
+    sizesContainer.querySelectorAll('.edit-sz-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sizesData.splice(parseInt(btn.getAttribute('data-idx')), 1);
+        renderSizeRows();
+      });
+    });
+  }
+  renderSizeRows();
+
+  document.getElementById('btn-add-edit-size')?.addEventListener('click', () => {
+    sizesData.push({ name: '', price: null });
+    renderSizeRows();
+  });
+
+  const dropZone = document.getElementById('edit-img-drop-zone');
   const fileInput = document.getElementById('edit-prod-file');
-  fileInput?.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        uploadedImageData = event.target.result;
-        const previewEl = document.getElementById('img-edit-preview-el');
-        if (previewEl) previewEl.src = uploadedImageData;
-      };
-      reader.readAsDataURL(file);
-    }
+  const previewEl = document.getElementById('img-edit-preview-el');
+
+  function handleImageFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      uploadedImageData = e.target.result;
+      if (previewEl) previewEl.src = uploadedImageData;
+      if (dropZone) {
+        dropZone.style.borderColor = 'var(--accent-1)';
+        dropZone.style.background = 'var(--accent-1-light)';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  fileInput?.addEventListener('change', (e) => handleImageFile(e.target.files[0]));
+
+  // Drag and drop support
+  dropZone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.borderColor = 'var(--accent-1)';
+    dropZone.style.background = 'var(--accent-1-light)';
+  });
+  dropZone?.addEventListener('dragleave', () => {
+    dropZone.style.borderColor = 'var(--border-color)';
+    dropZone.style.background = 'var(--bg-main)';
+  });
+  dropZone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.style.borderColor = 'var(--border-color)';
+    dropZone.style.background = 'var(--bg-main)';
+    handleImageFile(e.dataTransfer.files[0]);
   });
 
   document.getElementById('btn-close-edit-prod-modal')?.addEventListener('click', closeModal);
@@ -532,18 +619,26 @@ function showEditProductModal(prod, onNavigate) {
     const price = parseFloat(document.getElementById('edit-prod-price').value) || 0;
     const status = document.getElementById('edit-prod-status').value;
     const description = document.getElementById('edit-prod-desc').value.trim();
+    // Gather sizes from dynamic rows
+    const sizeRows = document.querySelectorAll('#edit-sizes-container [data-size-idx]');
+    const sizes = [];
+    sizeRows.forEach(row => {
+      const name = row.querySelector('.edit-sz-name').value.trim();
+      const priceVal = row.querySelector('.edit-sz-price').value.trim();
+      if (name) sizes.push({ name, price: priceVal !== '' ? parseFloat(priceVal) : null });
+    });
 
-    await SupabaseApi.updateProduct(prod.id, {
+    await Storage.updateProduct(prod.id, {
       title: name,
       name: name,
       price: price,
       status: status,
       image: uploadedImageData,
-      description: description
+      description: description,
+      sizes: sizes
     });
 
-    await Storage.syncFromSupabase();
-    window.showToast(`L'article "${name}" a été mis à jour dans Supabase !`, 'success');
+    window.showToast(`L'article "${name}" a été mis à jour avec succès !`, 'success');
     closeModal();
     onNavigate('admin', 'products');
   });
@@ -564,16 +659,48 @@ function showAddProductModal(onNavigate) {
             <label class="form-label">Titre du Produit *</label>
             <input type="text" class="form-control" id="new-prod-name" placeholder="ex: Adaptateur Universel Israël" required>
           </div>
-          <div class="grid-2">
-            <div class="form-group">
-              <label class="form-label">Prix (₪) *</label>
-              <input type="number" class="form-control" id="new-prod-price" placeholder="150" value="100" required>
-            </div>
-            <div class="form-group">
-              <label class="form-label"><i class="fa-solid fa-image" style="color: var(--accent-1);"></i> Photo (Importer)</label>
-              <input type="file" class="form-control" id="new-prod-file" accept="image/*">
+          <div class="form-group">
+            <label class="form-label">Prix (₪) *</label>
+            <input type="number" class="form-control" id="new-prod-price" placeholder="150" value="100" required>
+          </div>
+
+          <!-- Photo Upload Zone -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-image" style="color: var(--accent-1);"></i> Photo de l'Article</label>
+            <div id="new-img-drop-zone" style="
+              border: 2px dashed var(--border-color);
+              border-radius: var(--radius-md);
+              padding: 1.25rem;
+              text-align: center;
+              cursor: pointer;
+              transition: all 0.2s ease;
+              background: var(--bg-main);
+              position: relative;
+            ">
+              <img id="img-new-preview-el" src="${uploadedImageData}" alt="Aperçu" style="
+                width: 100%;
+                max-height: 200px;
+                object-fit: contain;
+                border-radius: 10px;
+                margin-bottom: 0.75rem;
+                display: block;
+              ">
+              <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                <i class="fa-solid fa-cloud-arrow-up" style="font-size: 1.4rem; color: var(--accent-1); display: block; margin-bottom: 0.4rem;"></i>
+                <strong>Cliquer pour choisir une photo</strong> ou glisser-déposer ici
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-subtle);">JPG, PNG, WEBP acceptés</div>
+              <input type="file" id="new-prod-file" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
             </div>
           </div>
+
+          <!-- Tailles avec Prix -->
+          <div class="form-group">
+            <label class="form-label"><i class="fa-solid fa-ruler" style="color: var(--accent-1);"></i> Tailles disponibles avec prix <span style="font-weight:400;color:var(--text-muted);font-size:0.82rem;">(laisser vide si pas de taille)</span></label>
+            <div id="new-sizes-container" style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:0.75rem;"></div>
+            <button type="button" class="btn btn-outline-pill btn-sm" id="btn-add-new-size" style="font-size:0.82rem;"><i class="fa-solid fa-plus"></i> Ajouter une taille</button>
+          </div>
+
           <div class="form-group">
             <label class="form-label">Description</label>
             <textarea class="form-control" id="new-prod-desc" rows="3" placeholder="Description de l'article..."></textarea>
@@ -590,16 +717,66 @@ function showAddProductModal(onNavigate) {
   document.body.insertAdjacentHTML('beforeend', modalHtml);
   const closeModal = () => document.getElementById('modal-add-product')?.remove();
 
+  // Dynamic size rows
+  const sizesContainer = document.getElementById('new-sizes-container');
+  let sizesData = [];
+  
+  function renderSizeRows() {
+    sizesContainer.innerHTML = sizesData.map((sz, i) => `
+      <div style="display:flex;gap:0.5rem;align-items:center;" data-size-idx="${i}">
+        <input type="text" class="form-control new-sz-name" value="${sz.name}" placeholder="ex: 50x100 ou XL" style="flex:1;min-height:40px;">
+        <input type="number" class="form-control new-sz-price" value="${sz.price !== null && sz.price !== undefined ? sz.price : ''}" placeholder="Prix (₪)" style="width:100px;min-height:40px;">
+        <button type="button" class="btn btn-secondary btn-sm new-sz-remove" data-idx="${i}" style="color:var(--danger);min-height:40px;width:40px;"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    `).join('');
+    sizesContainer.querySelectorAll('.new-sz-remove').forEach(btn => {
+      btn.addEventListener('click', () => {
+        sizesData.splice(parseInt(btn.getAttribute('data-idx')), 1);
+        renderSizeRows();
+      });
+    });
+  }
+  renderSizeRows();
+
+  document.getElementById('btn-add-new-size')?.addEventListener('click', () => {
+    sizesData.push({ name: '', price: null });
+    renderSizeRows();
+  });
+
+  const dropZone = document.getElementById('new-img-drop-zone');
   const fileInput = document.getElementById('new-prod-file');
-  fileInput?.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        uploadedImageData = event.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
+  const previewEl = document.getElementById('img-new-preview-el');
+
+  function handleImageFile(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      uploadedImageData = e.target.result;
+      if (previewEl) previewEl.src = uploadedImageData;
+      if (dropZone) {
+        dropZone.style.borderColor = 'var(--accent-1)';
+        dropZone.style.background = 'var(--accent-1-light)';
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  fileInput?.addEventListener('change', (e) => handleImageFile(e.target.files[0]));
+
+  dropZone?.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.borderColor = 'var(--accent-1)';
+    dropZone.style.background = 'var(--accent-1-light)';
+  });
+  dropZone?.addEventListener('dragleave', () => {
+    dropZone.style.borderColor = 'var(--border-color)';
+    dropZone.style.background = 'var(--bg-main)';
+  });
+  dropZone?.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.style.borderColor = 'var(--border-color)';
+    dropZone.style.background = 'var(--bg-main)';
+    handleImageFile(e.dataTransfer.files[0]);
   });
 
   document.getElementById('btn-close-prod-modal')?.addEventListener('click', closeModal);
@@ -611,13 +788,22 @@ function showAddProductModal(onNavigate) {
       alert('Veuillez saisir un nom de produit');
       return;
     }
+    // Gather sizes from dynamic rows
+    const sizeRows = document.querySelectorAll('#new-sizes-container [data-size-idx]');
+    const sizes = [];
+    sizeRows.forEach(row => {
+      const name = row.querySelector('.new-sz-name').value.trim();
+      const priceVal = row.querySelector('.new-sz-price').value.trim();
+      if (name) sizes.push({ name, price: priceVal !== '' ? parseFloat(priceVal) : null });
+    });
 
     await Storage.addProduct({
       name: name,
       title: name,
       price: parseFloat(document.getElementById('new-prod-price').value) || 0,
       image: uploadedImageData,
-      description: document.getElementById('new-prod-desc').value.trim() || 'Article de qualité pour le séminaire.'
+      description: document.getElementById('new-prod-desc').value.trim() || 'Article de qualité pour le séminaire.',
+      sizes: sizes
     });
 
     window.showToast(`Produit "${name}" créé dans Supabase !`, 'success');

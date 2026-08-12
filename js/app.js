@@ -155,6 +155,14 @@ function renderApp() {
         </div>
 
         <div>
+          <h4 style="font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 1.2rem;">Dons & Partenaires</h4>
+          <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; color: #CBD5E1;">
+            <li><a href="https://toratyaacov.fr" target="_blank" rel="noopener noreferrer" style="color: #CBD5E1;"><i class="fa-solid fa-heart" style="color: #F97316; margin-right: 0.4rem;"></i> Faire un don</a></li>
+            <li><a href="https://www.binianadeiad.com/" target="_blank" rel="noopener noreferrer" style="color: #CBD5E1;"><i class="fa-solid fa-handshake" style="color: #F97316; margin-right: 0.4rem;"></i> Binyan Adei Ad</a></li>
+          </ul>
+        </div>
+
+        <div>
           <h4 style="font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 1.2rem;">Contact</h4>
           <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.75rem; color: #CBD5E1;">
             <li style="display: flex; align-items: center; gap: 0.6rem;">
@@ -217,6 +225,10 @@ window.addEventListener('cart-updated', () => {
     const updatedNav = renderNavbar(currentRoute, navigateTo, () => renderCartDrawer(navigateTo), (mode) => showAuthModal(mode, navigateTo));
     navbarContainer.outerHTML = updatedNav;
   }
+  const drawer = document.getElementById('cart-drawer');
+  if (drawer && drawer.classList.contains('open')) {
+    renderCartDrawer(navigateTo);
+  }
 });
 
 window.addEventListener('open-cart-drawer', () => {
@@ -225,7 +237,6 @@ window.addEventListener('open-cart-drawer', () => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   await Storage.init();
-  const savedTheme = Storage.getTheme();
-  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.documentElement.setAttribute('data-theme', 'light');
   renderApp();
 });

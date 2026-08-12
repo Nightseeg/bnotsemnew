@@ -3,6 +3,7 @@
    ========================================================================== */
 
 import { Storage } from './storage.js';
+import { SupabaseApi } from './supabase.js';
 
 const ADMIN_EMAIL = 'contact@bnotseminaire.com';
 
@@ -24,9 +25,19 @@ export const Auth = {
       return { success: true, user: adminUser };
     }
 
-    const user = users.find(u => u.email.toLowerCase() === cleanEmail && u.password === password);
+    const user = users.find(u => u.email.toLowerCase() === cleanEmail);
 
     if (user) {
+      // Validate password if user has one stored
+      if (user.password && user.password !== password) {
+        return { success: false, message: 'Email ou mot de passe incorrect.' };
+      }
+      // If user profile had no password stored (synced profile), save provided password
+      if (!user.password) {
+        user.password = password;
+        Storage.updateUser(user);
+      }
+
       // Force non-admin email to student role even if role field says admin
       if (user.email.toLowerCase() !== ADMIN_EMAIL) {
         user.role = 'student';
@@ -68,6 +79,15 @@ export const Auth = {
     users.push(newUser);
     Storage.saveUsers(users);
     Storage.setCurrentUser(newUser);
+
+    // Sync profile to Supabase
+    SupabaseApi.createProfile({
+      name: newUser.name,
+      email: newUser.email,
+      phone: newUser.phone,
+      role: 'student'
+    }).catch(e => console.warn('Supabase profile create notice:', e));
+
     return { success: true, user: newUser };
   },
 

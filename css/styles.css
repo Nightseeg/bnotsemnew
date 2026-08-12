@@ -49,16 +49,7 @@
   --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-[data-theme="dark"] {
-  --text-main: #FAF7FB;
-  --text-muted: #D3C7DC;
-  --text-subtle: #A797B5;
-  --bg-main: #201A27;
-  --bg-card: #2B2333;
-  --bg-card-hover: #352B3F;
-  --border-color: rgba(199, 169, 209, 0.25);
-  --glass-bg: rgba(32, 26, 39, 0.92);
-}
+
 
 /* Base resets */
 *, *::before, *::after {

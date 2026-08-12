@@ -44,10 +44,31 @@ export const Storage = {
 
   async syncFromSupabase() {
     try {
-      // Products
+      const localProducts = this.getProducts();
       const sbProducts = await SupabaseApi.getProducts();
       if (sbProducts && sbProducts.length > 0) {
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(sbProducts));
+        const mergedProducts = sbProducts.map(sbP => {
+          const localP = localProducts.find(lP => String(lP.id) === String(sbP.id));
+          return {
+            ...sbP,
+            sizes: (localP && localP.sizes && localP.sizes.length > 0) ? localP.sizes : (sbP.sizes || []),
+            price: (localP && localP.price !== undefined) ? localP.price : sbP.price,
+            name: (localP && localP.name) ? localP.name : sbP.name,
+            title: (localP && localP.title) ? localP.title : sbP.title,
+            description: (localP && localP.description) ? localP.description : sbP.description,
+            image: (localP && localP.image) ? localP.image : sbP.image,
+            status: (localP && localP.status) ? localP.status : sbP.status
+          };
+        });
+
+        // Also preserve any locally added products
+        localProducts.forEach(localP => {
+          if (!mergedProducts.some(mP => String(mP.id) === String(localP.id))) {
+            mergedProducts.push(localP);
+          }
+        });
+
+        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(mergedProducts));
       }
 
       // Orders
@@ -60,11 +81,16 @@ export const Storage = {
       const sbProfiles = await SupabaseApi.getProfiles();
       if (sbProfiles && sbProfiles.length > 0) {
         const currentLocal = this.getUsers();
-        // Keep admin user contact@bnotseminaire.com
-        const adminUser = currentLocal.find(u => u.email === 'contact@bnotseminaire.com') || INITIAL_USERS[0];
-        const mergedUsers = [adminUser];
+        const mergedUsers = [...currentLocal];
+
         sbProfiles.forEach(p => {
-          if (!mergedUsers.some(u => u.email === p.email)) {
+          const existingIdx = mergedUsers.findIndex(u => u.email.toLowerCase() === p.email.toLowerCase());
+          if (existingIdx !== -1) {
+            mergedUsers[existingIdx] = {
+              ...p,
+              password: mergedUsers[existingIdx].password || p.password || ''
+            };
+          } else {
             mergedUsers.push(p);
           }
         });
@@ -152,6 +178,18 @@ export const Storage = {
     return newProduct;
   },
 
+  async updateProduct(id, productData) {
+    const products = this.getProducts();
+    const idx = products.findIndex(p => p.id === id);
+    if (idx !== -1) {
+      products[idx] = { ...products[idx], ...productData };
+      this.saveProducts(products);
+
+      // Sync to Supabase
+      await SupabaseApi.updateProduct(id, productData);
+    }
+  },
+
   async updateProductStatus(id, newStatus) {
     const products = this.getProducts();
     const idx = products.findIndex(p => p.id === id);
@@ -220,6 +258,21 @@ export const Storage = {
     }
   },
 
+  async cancelReservation(id) {
+    const resList = this.getReservations();
+    const idx = resList.findIndex(r => String(r.id) === String(id));
+    if (idx !== -1) {
+      const res = resList[idx];
+      // Update status in Supabase first if it has a full_id
+      if (res.full_id) {
+        await SupabaseApi.updateOrderStatus(res.full_id, 'Annulée');
+      }
+      // Remove from local list
+      resList.splice(idx, 1);
+      this.saveReservations(resList);
+    }
+  },
+
   // Cart
   getCart() {
     return JSON.parse(localStorage.getItem(STORAGE_KEYS.CART) || '[]');
@@ -236,14 +289,16 @@ export const Storage = {
 
   addToCart(product, quantity = 1) {
     const cart = this.getCart();
-    const existingIndex = cart.findIndex(item => item.productId === product.id);
+    const existingIndex = cart.findIndex(item => String(item.productId) === String(product.id) && item.selectedSize === (product.selectedSize || null));
     if (existingIndex !== -1) {
       cart[existingIndex].quantity += quantity;
+      if (product.price) cart[existingIndex].price = product.price;
     } else {
       cart.push({
         productId: product.id,
         name: product.name || product.title,
         price: product.price,
+        selectedSize: product.selectedSize || null,
         image: product.image,
         currency: product.currency || '₪',
         quantity: quantity

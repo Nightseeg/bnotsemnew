@@ -56,9 +56,9 @@ export function renderHomeView(onNavigate, onOpenAuthModal) {
                 <!-- Row 1: Visa -->
                 <div style="display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border: 1px solid var(--border-color); padding: 0.85rem 1.25rem; border-radius: 16px;">
                   <span style="font-weight: 700; font-size: 0.92rem; color: var(--text-main);">Visa étudiant</span>
-                  <button class="btn-hero-tag" id="btn-card-visa-nav" style="background: #FDF2EE; color: #E85D04; border: 1px solid #FCD7C6; padding: 0.3rem 0.9rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.8rem;">
-                    Formulaire
-                  </button>
+                  <span style="background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; padding: 0.3rem 0.9rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.78rem;">
+                    <i class="fa-solid fa-clock"></i> Bientôt disponible
+                  </span>
                 </div>
 
                 <!-- Row 2: Koupat Holim (Bientôt disponible) -->

@@ -51,27 +51,29 @@ export function renderServicesView(onNavigate) {
           </div>
         </div>
 
-        <!-- Card 2: Visa étudiant (A/2) -->
+        <!-- Card 2: Visa étudiant (A/2) (Bientôt disponible) -->
         <div style="background: var(--bg-card); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); overflow: hidden; display: grid; grid-template-columns: 0.9fr 1.1fr; height: 100%;">
           <div style="height: 100%; min-height: 280px; position: relative;">
             <img src="assets/images/visa_etudiant.jpg?v=2701" alt="Visa étudiant A/2" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div style="padding: 2rem 1.8rem; display: flex; flex-direction: column;">
-            <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem; line-height: 1.2;">
-              Visa étudiant (A/2)
-            </h3>
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.5rem;">
+              <h3 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--text-main); line-height: 1.2; margin: 0;">
+                Visa étudiant (A/2)
+              </h3>
+              <span style="background: #F1F5F9; color: #475569; border: 1px solid #E2E8F0; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-weight: 700; font-size: 0.75rem; white-space: nowrap;">
+                <i class="fa-solid fa-clock"></i> Bientôt disponible
+              </span>
+            </div>
             <div style="font-weight: 700; font-size: 0.92rem; color: var(--text-main); margin-bottom: 0.75rem;">
               Étudiez en Israël en toute sérénité.
             </div>
             <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem;">
-              De la première demande au renouvellement, notre équipe vous accompagne à chaque étape auprès des services du Consulat et du Misrad HaPnim.
+              De la première demande au renouvellement, notre équipe vous accompagnera à chaque étape auprès des services du Consulat et du Misrad HaPnim.
             </p>
             <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.65rem; align-items: flex-end;">
-              <button class="btn btn-service-go-visa" style="background: #0F2537; color: white; border-radius: var(--radius-full); padding: 0.6rem 1.4rem; font-size: 0.85rem; font-weight: 700;">
-                Accéder au Formulaire
-              </button>
-              <button class="btn btn-outline-pill btn-service-form" data-service="Visa étudiant" style="padding: 0.55rem 1.25rem; font-size: 0.85rem;">
-                Déposer mon dossier
+              <button class="btn" disabled style="background: #F1F5F9; color: #94A3B8; border: 1px solid #E2E8F0; border-radius: var(--radius-full); padding: 0.6rem 1.4rem; font-size: 0.85rem; font-weight: 700; cursor: not-allowed;">
+                <i class="fa-solid fa-lock"></i> Bientôt disponible
               </button>
             </div>
           </div>

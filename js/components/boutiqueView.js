@@ -8,6 +8,13 @@ import { Auth } from '../auth.js';
 let activeCategory = 'all';
 let searchQuery = '';
 
+// Helper to normalize sizes: supports both [{name,price}] and ["S","M"] legacy formats
+function parseSizes(raw) {
+  if (!raw || !Array.isArray(raw) || raw.length === 0) return [];
+  if (typeof raw[0] === 'object' && raw[0].name !== undefined) return raw;
+  return raw.map(s => ({ name: String(s), price: null }));
+}
+
 export function renderBoutiqueView(onNavigate, activeTab = 'catalog') {
   const products = Storage.getProducts();
   const reservations = Storage.getReservations();
@@ -21,10 +28,6 @@ export function renderBoutiqueView(onNavigate, activeTab = 'catalog') {
       (prod.name || prod.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (prod.description || '').toLowerCase().includes(searchQuery.toLowerCase());
 
-    if (activeCategory === 'all') return matchesSearch;
-    if (activeCategory === 'literie') return matchesSearch && (prod.title || prod.name || '').toLowerCase().match(/(couette|parure|oreiller|peignoir|serviette)/i);
-    if (activeCategory === 'vetements') return matchesSearch && (prod.title || prod.name || '').toLowerCase().match(/(chemise|robe|jupe)/i);
-    if (activeCategory === 'telephonie') return matchesSearch && (prod.title || prod.name || '').toLowerCase().match(/(téléphone|kasher|golan|nokia|zte|phone)/i);
     return matchesSearch;
   });
 
@@ -74,6 +77,34 @@ export function renderBoutiqueView(onNavigate, activeTab = 'catalog') {
       window.dispatchEvent(new CustomEvent('open-cart-drawer'));
     });
 
+    // Cancel reservation buttons
+    document.querySelectorAll('.btn-cancel-res').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const resId = btn.getAttribute('data-res-id');
+        if (!resId) return;
+
+        // Confirmation dialog
+        const confirmed = window.confirm('Êtes-vous sûr(e) de vouloir annuler cette réservation ? Cette action est irréversible.');
+        if (!confirmed) return;
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Annulation...';
+
+        await Storage.cancelReservation(resId);
+
+        window.showToast('Réservation annulée avec succès.', 'info');
+
+        // Remove card from DOM immediately without full page reload
+        const card = document.getElementById(`res-card-${resId}`);
+        if (card) {
+          card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.96)';
+          setTimeout(() => card.remove(), 300);
+        }
+      });
+    });
+
     bindCatalogEvents(onNavigate);
   }, 0);
 
@@ -84,30 +115,10 @@ function renderCatalog(products, totalCount) {
   return `
     <!-- Filters & Search Bar -->
     <div style="background: var(--bg-card); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 2rem; box-shadow: var(--shadow-sm);">
-      <div style="display: flex; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-        
-        <!-- Category Filter Pills -->
-        <div style="display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.25rem; -webkit-overflow-scrolling: touch; width: 100%; max-width: 650px;">
-          <button class="btn btn-sm ${activeCategory === 'all' ? 'btn-pink-gradient' : 'btn-outline-pill'}" data-cat="all" style="font-size: 0.82rem; padding: 0.4rem 1rem;">
-            Tous (${totalCount})
-          </button>
-          <button class="btn btn-sm ${activeCategory === 'literie' ? 'btn-pink-gradient' : 'btn-outline-pill'}" data-cat="literie" style="font-size: 0.82rem; padding: 0.4rem 1rem;">
-            🛏️ Literie & Bain
-          </button>
-          <button class="btn btn-sm ${activeCategory === 'vetements' ? 'btn-pink-gradient' : 'btn-outline-pill'}" data-cat="vetements" style="font-size: 0.82rem; padding: 0.4rem 1rem;">
-            👔 Vetements
-          </button>
-          <button class="btn btn-sm ${activeCategory === 'telephonie' ? 'btn-pink-gradient' : 'btn-outline-pill'}" data-cat="telephonie" style="font-size: 0.82rem; padding: 0.4rem 1rem;">
-            📱 Téléphonie Kasher
-          </button>
-        </div>
-
-        <!-- Search Input -->
-        <div style="position: relative; flex: 1; min-width: 220px;">
-          <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-          <input type="text" id="search-boutique" class="form-control" placeholder="Rechercher un article..." value="${searchQuery}" style="padding-left: 2.6rem; min-height: 42px;">
-        </div>
-
+      <!-- Search Input -->
+      <div style="position: relative;">
+        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+        <input type="text" id="search-boutique" class="form-control" placeholder="Rechercher un article..." value="${searchQuery}" style="padding-left: 2.6rem; min-height: 42px;">
       </div>
     </div>
 
@@ -128,26 +139,52 @@ function renderCatalog(products, totalCount) {
 
 function renderProductCard(prod) {
   const isOutOfStock = prod.status === 'out_of_stock';
+  const sizes = parseSizes(prod.sizes);
+  const hasSizes = sizes.length > 0;
+  const hasPricedSizes = hasSizes && sizes.some(s => s.price !== null && s.price !== undefined);
 
   return `
     <div class="product-card">
       <div class="product-image-wrap">
         <img src="${prod.image}" alt="${prod.title || prod.name}" class="product-image" loading="lazy">
         <span class="badge ${isOutOfStock ? 'badge-danger' : 'badge-success'}" style="position: absolute; top: 10px; left: 10px; box-shadow: var(--shadow-sm);">
-          ${isOutOfStock ? '🔴 Rupture' : '🟢 Disponible'}
+          ${isOutOfStock ? '\ud83d\udd34 Rupture' : '\ud83d\udfe2 Disponible'}
         </span>
       </div>
 
       <div class="product-details">
         <div class="product-title">${prod.title || prod.name}</div>
         <div class="product-desc">${prod.description || ''}</div>
+
+        ${hasSizes ? `
+          <div style="margin-bottom: 0.75rem;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.4rem;">Choisir la taille</div>
+            <div class="size-selector" data-product-id="${prod.id}" style="display: flex; flex-wrap: wrap; gap: 0.35rem;">
+              ${sizes.map(sz => `
+                <button class="btn-size" data-size="${sz.name}" data-size-price="${sz.price !== null && sz.price !== undefined ? sz.price : ''}" style="
+                  padding: 0.3rem 0.65rem;
+                  border-radius: 8px;
+                  font-size: 0.78rem;
+                  font-weight: 700;
+                  border: 1.5px solid var(--border-color);
+                  background: var(--bg-main);
+                  color: var(--text-main);
+                  cursor: pointer;
+                  transition: all 0.15s ease;
+                  line-height: 1.3;
+                  text-align: center;
+                ">${sz.name}${sz.price !== null && sz.price !== undefined ? `<br><span style="font-size:0.7rem;font-weight:600;color:var(--text-muted);">${sz.price} \u20aa</span>` : ''}</button>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
         
         <div class="product-footer">
-          <div class="product-price">${prod.price} ₪</div>
+          <div class="product-price" id="price-display-${prod.id}">${hasPricedSizes ? '<span style="font-size:0.82rem;color:var(--text-muted);font-weight:600;">Choisir une taille</span>' : `${prod.price} \u20aa`}</div>
           
-          <button class="btn ${isOutOfStock ? 'btn-secondary' : 'btn-pink-gradient'} btn-sm btn-add-cart" data-id="${prod.id}" ${isOutOfStock ? 'disabled style="opacity: 0.55; cursor: not-allowed;"' : ''}>
+          <button class="btn ${isOutOfStock ? 'btn-secondary' : 'btn-pink-gradient'} btn-sm btn-add-cart" data-id="${prod.id}" data-has-sizes="${hasSizes}" data-base-price="${prod.price}" ${isOutOfStock ? 'disabled style="opacity: 0.55; cursor: not-allowed;"' : ''}>
             <i class="fa-solid ${isOutOfStock ? 'fa-ban' : 'fa-cart-plus'}"></i>
-            <span>${isOutOfStock ? 'Épuisé' : 'Réserver'}</span>
+            <span>${isOutOfStock ? '\u00c9puis\u00e9' : 'R\u00e9server'}</span>
           </button>
         </div>
       </div>
@@ -164,13 +201,13 @@ function renderMyReservations(reservations, onNavigate) {
       ` : `
         <div style="display: flex; flex-direction: column; gap: 1.5rem;">
           ${reservations.map(res => `
-            <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+            <div style="background: var(--bg-main); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;" id="res-card-${res.id}">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
                 <div>
                   <span style="font-weight: 800; font-size: 1.05rem;">Commande #${res.id}</span>
                   <span style="font-size: 0.82rem; color: var(--text-muted); margin-left: 0.5rem;">(${res.createdAt})</span>
                 </div>
-                <span class="badge ${res.status === 'Validée' ? 'badge-success' : 'badge-warning'}">
+                <span class="badge ${res.status === 'Validée' ? 'badge-success' : res.status === 'Annulée' ? 'badge-danger' : 'badge-warning'}">
                   ${res.status}
                 </span>
               </div>
@@ -178,15 +215,37 @@ function renderMyReservations(reservations, onNavigate) {
               <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
                 ${res.items.map(item => `
                   <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
-                    <span>${item.name} <strong>x${item.quantity || 1}</strong></span>
-                    <strong>${item.price * (item.quantity || 1)} ₪</strong>
+                    <span>${item.name}${item.selectedSize ? ` (${item.selectedSize})` : ''} <strong>x${item.quantity || 1}</strong></span>
+                    <strong>${item.price * (item.quantity || 1)} \u20aa</strong>
                   </div>
                 `).join('')}
               </div>
 
-              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
                 <span style="font-size: 0.88rem; color: var(--text-muted);">Mode : Réservation livrée au séminaire</span>
-                <strong style="font-size: 1.2rem; color: var(--text-main);">${res.totalPrice} ₪</strong>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                  <strong style="font-size: 1.2rem; color: var(--text-main);">${res.totalPrice} \u20aa</strong>
+                  ${res.status !== 'Annulée' ? `
+                    <button class="btn btn-sm btn-cancel-res" data-res-id="${res.id}" style="
+                      background: transparent;
+                      border: 1.5px solid var(--danger);
+                      color: var(--danger);
+                      padding: 0.35rem 0.85rem;
+                      border-radius: var(--radius-sm);
+                      font-size: 0.82rem;
+                      font-weight: 700;
+                      cursor: pointer;
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 0.35rem;
+                      transition: all 0.15s ease;
+                    "
+                    onmouseover="this.style.background='var(--danger)';this.style.color='#fff';"
+                    onmouseout="this.style.background='transparent';this.style.color='var(--danger)';">
+                      <i class="fa-solid fa-xmark"></i> Annuler
+                    </button>
+                  ` : ''}
+                </div>
               </div>
             </div>
           `).join('')}
@@ -222,16 +281,69 @@ function bindCatalogEvents(onNavigate) {
 }
 
 function bindAddButtons() {
+  // Size button selection highlight + price update
+  document.querySelectorAll('.size-selector').forEach(selector => {
+    const productId = selector.getAttribute('data-product-id');
+    selector.querySelectorAll('.btn-size').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Reset all
+        selector.querySelectorAll('.btn-size').forEach(b => {
+          b.style.background = 'var(--bg-main)';
+          b.style.borderColor = 'var(--border-color)';
+          b.style.color = 'var(--text-main)';
+          b.removeAttribute('data-selected');
+        });
+        // Highlight selected
+        btn.style.background = 'var(--accent-1)';
+        btn.style.borderColor = 'var(--accent-1)';
+        btn.style.color = 'var(--text-main)';
+        btn.setAttribute('data-selected', 'true');
+
+        // Update displayed price if this size has its own price
+        const sizePrice = btn.getAttribute('data-size-price');
+        const priceDisplay = document.getElementById(`price-display-${productId}`);
+        if (priceDisplay && sizePrice && sizePrice !== '') {
+          priceDisplay.innerHTML = `${sizePrice} \u20aa`;
+          priceDisplay.style.fontFamily = 'var(--font-heading)';
+          priceDisplay.style.fontWeight = '800';
+          priceDisplay.style.fontSize = '1.25rem';
+          priceDisplay.style.color = 'var(--text-main)';
+        }
+      });
+    });
+  });
+
   document.querySelectorAll('.btn-add-cart').forEach(btn => {
     btn.addEventListener('click', () => {
       const prodId = btn.getAttribute('data-id');
+      const hasSizes = btn.getAttribute('data-has-sizes') === 'true';
       const products = Storage.getProducts();
-      const prod = products.find(p => p.id === prodId);
-      if (prod && prod.status !== 'out_of_stock') {
+      const prod = products.find(p => String(p.id) === String(prodId));
+      if (!prod || prod.status === 'out_of_stock') return;
+
+      if (hasSizes) {
+        const selector = document.querySelector(`.size-selector[data-product-id="${prodId}"]`);
+        const selectedBtn = selector ? selector.querySelector('.btn-size[data-selected="true"]') : null;
+        if (!selectedBtn) {
+          window.showToast('Veuillez choisir une taille avant d\'ajouter au panier.', 'warning');
+          if (selector) {
+            selector.style.outline = '2px solid var(--accent-2)';
+            selector.style.borderRadius = '8px';
+            setTimeout(() => { selector.style.outline = ''; }, 1500);
+          }
+          return;
+        }
+        const selectedSize = selectedBtn.getAttribute('data-size');
+        const sizePrice = selectedBtn.getAttribute('data-size-price');
+        const finalPrice = (sizePrice && sizePrice !== '') ? parseFloat(sizePrice) : prod.price;
+        Storage.addToCart({ ...prod, selectedSize, price: finalPrice });
+        window.showToast(`"${prod.name || prod.title}" (${selectedSize}) ajouté au panier !`, 'success');
+      } else {
         Storage.addToCart(prod);
         window.showToast(`"${prod.name || prod.title}" ajouté à votre panier !`, 'success');
-        window.dispatchEvent(new Event('cart-updated'));
       }
+      window.dispatchEvent(new Event('cart-updated'));
+      window.dispatchEvent(new CustomEvent('open-cart-drawer'));
     });
   });
 }

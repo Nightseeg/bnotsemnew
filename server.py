@@ -11,10 +11,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         super().__init__(*args, directory=DIRECTORY, **kwargs)
 
 if __name__ == '__main__':
-    print(f"🚀 Serveur Bnot Séminaire démarré sur http://localhost:{PORT}")
+    import sys
+    print(f"[OK] Serveur demarre sur http://localhost:{PORT}", flush=True)
     webbrowser.open(f"http://localhost:{PORT}")
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            print("\n🛑 Serveur arrêté.")
+            print("\n[STOP] Serveur arrete.")

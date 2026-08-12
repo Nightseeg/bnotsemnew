@@ -27,7 +27,8 @@ const PRODUCT_IMAGE_MAP = {
 };
 
 function resolveProductImage(p) {
-  if (p.image && p.image.startsWith('http')) return p.image;
+  // Accept http URLs and base64 data URLs (uploaded images)
+  if (p.image && (p.image.startsWith('http') || p.image.startsWith('data:'))) return p.image;
   const titleLower = (p.title || '').toLowerCase();
   for (const [key, url] of Object.entries(PRODUCT_IMAGE_MAP)) {
     if (titleLower.includes(key)) return url;
@@ -65,7 +66,8 @@ export const SupabaseApi = {
           status: p.status || 'in_stock',
           stock: p.status === 'out_of_stock' ? 0 : 25,
           available: p.status !== 'out_of_stock',
-          tag: p.status === 'out_of_stock' ? 'Rupture de Stock' : 'Disponible'
+          tag: p.status === 'out_of_stock' ? 'Rupture de Stock' : 'Disponible',
+          sizes: p.sizes || []
         };
       });
     } catch (e) {
@@ -84,13 +86,16 @@ export const SupabaseApi = {
           description: product.description || '',
           price: product.price || 0,
           image: product.image || '',
-          status: 'in_stock'
+          status: 'in_stock',
+          sizes: product.sizes || []
         }])
         .select();
-      if (error) throw error;
-      return data[0];
+      if (error) {
+        console.warn('Supabase add product notice:', error.message);
+      }
+      return data ? data[0] : null;
     } catch (e) {
-      console.error('Supabase add product error:', e);
+      console.warn('Supabase add product exception:', e);
       return null;
     }
   },
@@ -98,20 +103,25 @@ export const SupabaseApi = {
   async updateProduct(id, productData) {
     if (!supabase) return false;
     try {
+      const updateData = {
+        title: productData.title || productData.name,
+        price: productData.price,
+        description: productData.description,
+        status: productData.status,
+        sizes: productData.sizes || []
+      };
+      if (productData.image) updateData.image = productData.image;
+
       const { error } = await supabase
         .from('products')
-        .update({
-          title: productData.title || productData.name,
-          price: productData.price,
-          description: productData.description,
-          image: productData.image,
-          status: productData.status
-        })
+        .update(updateData)
         .eq('id', id);
-      if (error) throw error;
+      if (error) {
+        console.warn('Supabase update product notice:', error.message);
+      }
       return true;
     } catch (e) {
-      console.error('Supabase update product error:', e);
+      console.warn('Supabase update product exception:', e);
       return false;
     }
   },
