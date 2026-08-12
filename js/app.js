@@ -15,6 +15,7 @@ import { renderProductView } from './components/productView.js';
 import { renderAdminView } from './components/adminView.js';
 import { renderContactView } from './components/contactView.js';
 import { renderEtailView } from './components/etailView.js';
+import { renderInstallationView } from './components/installationView.js';
 import { showAuthModal } from './components/authModal.js';
 import { renderCartDrawer } from './components/cartDrawer.js';
 
@@ -125,6 +126,9 @@ function renderApp() {
       break;
     case 'etail':
       mainContentHtml = renderEtailView(navigateTo);
+      break;
+    case 'installation':
+      mainContentHtml = renderInstallationView(navigateTo);
       break;
     case 'admin':
     case 'admin-girls':

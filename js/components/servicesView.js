@@ -127,7 +127,7 @@ export function renderServicesView(onNavigate) {
               Retrouvez toutes les informations essentielles et l'aide personnalisée pour préparer votre arrivée.
             </p>
             <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.65rem; align-items: flex-end;">
-              <button class="btn btn-service-form" data-service="Installation en Israël" style="background: #0F2537; color: white; border-radius: var(--radius-full); padding: 0.6rem 1.4rem; font-size: 0.85rem; font-weight: 700;">
+              <button class="btn" id="btn-go-installation" style="background: #0F2537; color: white; border-radius: var(--radius-full); padding: 0.6rem 1.4rem; font-size: 0.85rem; font-weight: 700;">
                 En savoir plus
               </button>
               <button class="btn btn-outline-pill btn-service-form" data-service="Installation en Israël" style="padding: 0.55rem 1.25rem; font-size: 0.85rem;">
@@ -181,6 +181,7 @@ export function renderServicesView(onNavigate) {
     document.getElementById('btn-kit-order-direct')?.addEventListener('click', () => onNavigate('boutique'));
 
     document.getElementById('btn-go-etail')?.addEventListener('click', () => onNavigate('etail'));
+    document.getElementById('btn-go-installation')?.addEventListener('click', () => onNavigate('installation'));
 
     // Service form modal triggers
     document.querySelectorAll('.btn-service-form').forEach(btn => {
