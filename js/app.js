@@ -14,6 +14,7 @@ import { renderBoutiqueView } from './components/boutiqueView.js';
 import { renderProductView } from './components/productView.js';
 import { renderAdminView } from './components/adminView.js';
 import { renderContactView } from './components/contactView.js';
+import { renderEtailView } from './components/etailView.js';
 import { showAuthModal } from './components/authModal.js';
 import { renderCartDrawer } from './components/cartDrawer.js';
 
@@ -121,6 +122,9 @@ function renderApp() {
       break;
     case 'contact':
       mainContentHtml = renderContactView(navigateTo);
+      break;
+    case 'etail':
+      mainContentHtml = renderEtailView(navigateTo);
       break;
     case 'admin':
     case 'admin-girls':

@@ -101,7 +101,7 @@ export function renderServicesView(onNavigate) {
               Nous vous guidons pour effectuer votre demande d’ETA-IL rapidement et sans erreur avant votre vol.
             </p>
             <div style="margin-top: auto; display: flex; flex-direction: column; gap: 0.65rem; align-items: flex-end;">
-              <button class="btn btn-service-form" data-service="ETA-IL" style="background: #0F2537; color: white; border-radius: var(--radius-full); padding: 0.6rem 1.4rem; font-size: 0.85rem; font-weight: 700;">
+              <button class="btn" id="btn-go-etail" style="background: #0F2537; color: white; border-radius: var(--radius-full); padding: 0.6rem 1.4rem; font-size: 0.85rem; font-weight: 700;">
                 En savoir plus
               </button>
               <a href="https://israel-entry.piba.gov.il/" target="_blank" class="btn btn-outline-pill" style="padding: 0.55rem 1.25rem; font-size: 0.85rem;">
@@ -179,6 +179,8 @@ export function renderServicesView(onNavigate) {
     });
 
     document.getElementById('btn-kit-order-direct')?.addEventListener('click', () => onNavigate('boutique'));
+
+    document.getElementById('btn-go-etail')?.addEventListener('click', () => onNavigate('etail'));
 
     // Service form modal triggers
     document.querySelectorAll('.btn-service-form').forEach(btn => {
