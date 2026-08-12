@@ -204,27 +204,35 @@ export const Storage = {
   },
 
   async addReservation(reservationData) {
-    const reservations = this.getReservations();
     const newRes = {
       id: 'res-' + Math.floor(100 + Math.random() * 900),
       createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
       status: 'En attente',
       ...reservationData
     };
-    reservations.unshift(newRes);
-    this.saveReservations(reservations);
-    this.clearCart();
 
-    // Push to Supabase table orders
+    // Push to Supabase table orders FIRST
     await SupabaseApi.createOrder({
       userName: newRes.userName,
-      userEmail: newRes.userEmail || '',
+      userEmail: newRes.userEmail || reservationData.userEmail || '',
       userPhone: newRes.userPhone || '',
       userSeminary: newRes.userSeminary || '',
       items: newRes.items || [],
       totalPrice: newRes.totalPrice || 0
     });
 
+    // Re-sync orders from Supabase to get the fresh list including the new order
+    const freshOrders = await SupabaseApi.getOrders();
+    if (freshOrders) {
+      this.saveReservations(freshOrders);
+    } else {
+      // Fallback: save locally
+      const reservations = this.getReservations();
+      reservations.unshift(newRes);
+      this.saveReservations(reservations);
+    }
+
+    this.clearCart();
     return newRes;
   },
 

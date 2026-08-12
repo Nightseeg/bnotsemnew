@@ -191,27 +191,44 @@ function showCheckoutModal(user, cart, totalPrice, onNavigate) {
   document.getElementById('btn-close-checkout')?.addEventListener('click', closeModal);
   document.getElementById('btn-cancel-checkout')?.addEventListener('click', closeModal);
 
-  document.getElementById('btn-confirm-final-reservation')?.addEventListener('click', () => {
+  document.getElementById('btn-confirm-final-reservation')?.addEventListener('click', async () => {
     const deliveryOption = document.getElementById('checkout-delivery-opt').value;
     const deliveryDate = document.getElementById('checkout-delivery-date').value;
     const note = document.getElementById('checkout-note').value.trim();
 
-    const newRes = Storage.addReservation({
-      userId: user.id,
-      userName: user.name,
-      userPhone: user.phone || '',
-      userSeminary: user.seminary || 'Séminaire Non Spécifié',
-      items: cart,
-      totalPrice: totalPrice,
-      currency: '₪',
-      deliveryDate: deliveryDate,
-      deliveryOption: deliveryOption,
-      note: note
-    });
+    // Disable button to prevent double-click
+    const btn = document.getElementById('btn-confirm-final-reservation');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enregistrement en cours...';
+    }
 
-    closeModal();
-    window.showToast(`Réservation #${newRes.id} enregistrée avec succès !`, 'success');
-    window.dispatchEvent(new CustomEvent('cart-updated'));
-    onNavigate('my-reservations');
+    try {
+      const newRes = await Storage.addReservation({
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email || '',
+        userPhone: user.phone || '',
+        userSeminary: user.seminary || 'Séminaire Non Spécifié',
+        items: cart,
+        totalPrice: totalPrice,
+        currency: '₪',
+        deliveryDate: deliveryDate,
+        deliveryOption: deliveryOption,
+        note: note
+      });
+
+      closeModal();
+      window.showToast(`Réservation #${newRes.id} enregistrée avec succès !`, 'success');
+      window.dispatchEvent(new CustomEvent('cart-updated'));
+      onNavigate('my-reservations');
+    } catch (err) {
+      console.error('Erreur réservation:', err);
+      window.showToast('Erreur lors de la réservation. Veuillez réessayer.', 'danger');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Valider ma Réservation';
+      }
+    }
   });
 }
