@@ -141,12 +141,8 @@ function renderProductCard(prod) {
   const isOutOfStock = prod.status === 'out_of_stock';
   const sizes = parseSizes(prod.sizes);
   const hasSizes = sizes.length > 0;
-  const hasPricedSizes = hasSizes && sizes.some(s => s.price !== null && s.price !== undefined);
-
-  const images = (prod.images && Array.isArray(prod.images) && prod.images.length > 0)
-    ? prod.images
-    : (prod.image ? [prod.image] : []);
-  const mainImage = images[0] || 'https://images.unsplash.com/photo-1584992236310-6edddc08acff?auto=format&fit=crop&w=600&q=80';
+  const pricedSizes = sizes.filter(s => s.price !== null && s.price !== undefined && s.price !== '' && !isNaN(s.price));
+  const minPrice = pricedSizes.length > 0 ? Math.min(...pricedSizes.map(s => parseFloat(s.price))) : prod.price;
 
   return `
     <div class="product-card">
@@ -202,7 +198,7 @@ function renderProductCard(prod) {
         ` : ''}
         
         <div class="product-footer">
-          <div class="product-price" id="price-display-${prod.id}">${hasPricedSizes ? '<span style="font-size:0.82rem;color:var(--text-muted);font-weight:600;">Choisir une taille</span>' : `${prod.price} \u20aa`}</div>
+          <div class="product-price" id="price-display-${prod.id}">${hasPricedSizes ? `<span style="font-size:0.82rem;color:var(--text-muted);font-weight:600;">À partir de </span><strong style="font-size:1.25rem;font-weight:800;color:var(--text-main);">${minPrice} \u20aa</strong>` : `${prod.price} \u20aa`}</div>
           
           <button class="btn ${isOutOfStock ? 'btn-secondary' : 'btn-pink-gradient'} btn-sm btn-add-cart" data-id="${prod.id}" data-has-sizes="${hasSizes}" data-base-price="${prod.price}" ${isOutOfStock ? 'disabled style="opacity: 0.55; cursor: not-allowed;"' : ''}>
             <i class="fa-solid ${isOutOfStock ? 'fa-ban' : 'fa-cart-plus'}"></i>
