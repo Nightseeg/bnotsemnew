@@ -2,19 +2,19 @@
    BNOT SÉMINAIRE - MAIN APPLICATION CONTROLLER (V=2701 ALL 5 PHOTOS UPDATED)
    ========================================================================== */
 
-import { Storage } from './storage.js?v=2701';
-import { Auth } from './auth.js?v=2701';
-import { renderNavbar } from './components/navbar.js?v=2701';
-import { renderHomeView } from './components/homeView.js?v=2701';
-import { renderServicesView } from './components/servicesView.js?v=2701';
-import { renderStudentDashboard } from './components/studentDash.js?v=2701';
-import { renderKoupatView } from './components/koupatView.js?v=2701';
-import { renderVisaView } from './components/visaView.js?v=2701';
-import { renderBoutiqueView } from './components/boutiqueView.js?v=2701';
-import { renderAdminView } from './components/adminView.js?v=2701';
-import { renderContactView } from './components/contactView.js?v=2701';
-import { showAuthModal } from './components/authModal.js?v=2701';
-import { renderCartDrawer } from './components/cartDrawer.js?v=2701';
+import { Storage } from './storage.js';
+import { Auth } from './auth.js';
+import { renderNavbar } from './components/navbar.js';
+import { renderHomeView } from './components/homeView.js';
+import { renderServicesView } from './components/servicesView.js';
+import { renderStudentDashboard } from './components/studentDash.js';
+import { renderKoupatView } from './components/koupatView.js';
+import { renderVisaView } from './components/visaView.js';
+import { renderBoutiqueView } from './components/boutiqueView.js';
+import { renderAdminView } from './components/adminView.js';
+import { renderContactView } from './components/contactView.js';
+import { showAuthModal } from './components/authModal.js';
+import { renderCartDrawer } from './components/cartDrawer.js';
 
 let currentRoute = 'home';
 let currentSubParam = null;
@@ -49,7 +49,7 @@ window.showToast = function(message, type = 'info') {
   }, 3500);
 };
 
-function navigateTo(route, subParam = null) {
+async function navigateTo(route, subParam = null) {
   currentRoute = route;
   currentSubParam = subParam;
 
@@ -66,6 +66,11 @@ function navigateTo(route, subParam = null) {
       showAuthModal('login', navigateTo);
       currentRoute = 'home';
     }
+  }
+
+  // For boutique routes, always sync fresh from Supabase first
+  if (route === 'boutique' || route === 'my-reservations') {
+    await Storage.syncFromSupabase();
   }
 
   renderApp();
