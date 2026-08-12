@@ -89,12 +89,6 @@ function renderApp() {
   const app = document.getElementById('app');
   if (!app) return;
 
-  const currentUser = Auth.getCurrentUser();
-
-  if (currentRoute === 'home' && currentUser) {
-    currentRoute = currentUser.role === 'admin' ? 'admin' : 'dashboard';
-  }
-
   const navbarHtml = renderNavbar(currentRoute, navigateTo, () => renderCartDrawer(navigateTo), (mode) => showAuthModal(mode, navigateTo));
 
   let mainContentHtml = '';
