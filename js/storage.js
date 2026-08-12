@@ -46,6 +46,7 @@ export const Storage = {
     try {
       const localProducts = this.getProducts();
       const sbProducts = await SupabaseApi.getProducts();
+
       if (sbProducts && sbProducts.length > 0) {
         const mergedProducts = sbProducts.map(sbP => {
           const localP = localProducts.find(lP => String(lP.id) === String(sbP.id));
@@ -69,6 +70,18 @@ export const Storage = {
         });
 
         localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(mergedProducts));
+
+        // Push any local-only products to Supabase
+        for (const prod of mergedProducts) {
+          if (!sbProducts.some(sp => String(sp.id) === String(prod.id))) {
+            await SupabaseApi.updateProduct(prod.id, prod);
+          }
+        }
+      } else if (localProducts && localProducts.length > 0) {
+        // Supabase is empty — push all local products to Supabase
+        for (const prod of localProducts) {
+          await SupabaseApi.updateProduct(prod.id, prod);
+        }
       }
 
       // Orders

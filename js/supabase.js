@@ -103,23 +103,40 @@ export const SupabaseApi = {
   async updateProduct(id, productData) {
     if (!supabase) return false;
     try {
-      const updateData = {
+      const payload = {
         title: productData.title || productData.name,
         price: productData.price,
-        description: productData.description,
-        status: productData.status,
+        description: productData.description || '',
+        status: productData.status || 'in_stock',
         sizes: productData.sizes || []
       };
-      if (productData.image) updateData.image = productData.image;
+      if (productData.image) payload.image = productData.image;
 
-      const { error } = await supabase
+      // Check if product exists in Supabase by ID
+      const { data: existing } = await supabase
         .from('products')
-        .update(updateData)
+        .select('id')
         .eq('id', id);
-      if (error) {
-        console.warn('Supabase update product notice:', error.message);
+
+      if (existing && existing.length > 0) {
+        const { error } = await supabase
+          .from('products')
+          .update(payload)
+          .eq('id', id);
+        if (error) console.warn('Supabase update product error:', error.message);
+        return true;
+      } else {
+        // Insert as new product in Supabase
+        const { data: inserted, error } = await supabase
+          .from('products')
+          .insert([payload])
+          .select();
+        if (error) {
+          console.warn('Supabase insert product error:', error.message);
+          return false;
+        }
+        return inserted && inserted[0] ? inserted[0].id : true;
       }
-      return true;
     } catch (e) {
       console.warn('Supabase update product exception:', e);
       return false;
