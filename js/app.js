@@ -148,9 +148,9 @@ function renderApp() {
         </div>
 
         <div>
-          <h4 style="font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 1.2rem;">Services</h4>
+          <h4 style="font-size: 1rem; font-weight: 700; color: #ffffff; margin-bottom: 1.2rem;">Services & Boutique</h4>
           <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.65rem; color: #CBD5E1;">
-            <li><a href="#" class="footer-link-action" data-action="services">Nos Services</a></li>
+            <li><a href="#" class="footer-link-action" data-action="boutique">Boutique</a></li>
             <li><a href="#" class="footer-link-action" data-action="form-visa">Visa étudiant A/2</a></li>
             <li><a href="#" class="footer-link-action" data-action="services">Koupat Holim</a></li>
             <li><a href="https://israel-entry.piba.gov.il/" target="_blank" style="color: #CBD5E1;">ETA-IL officiel</a></li>
@@ -217,7 +217,8 @@ function renderApp() {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const action = link.getAttribute('data-action');
-        if (action === 'services') navigateTo('services');
+        if (action === 'boutique') navigateTo('boutique');
+        else if (action === 'services') navigateTo('services');
         else if (action === 'form-visa') navigateTo('visa');
         else if (action === 'form-koupat') navigateTo('services');
         else if (action === 'contact') navigateTo('contact');
