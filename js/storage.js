@@ -304,7 +304,7 @@ export const Storage = {
       this.saveReservations(reservations);
     }
 
-    // Send email notification to bnotseminaire@gmail.com via FormSubmit AJAX service
+    // Send email notification to bnotseminaire@gmail.com (Admin notification)
     try {
       const itemsList = cleanItems.map(i => `- ${i.name}${i.selectedSize ? ' (Taille: ' + i.selectedSize + ')' : ''} x${i.quantity} = ${i.price * i.quantity} ₪`).join('\n');
       fetch('https://formsubmit.co/ajax/bnotseminaire@gmail.com', {
@@ -330,18 +330,77 @@ export const Storage = {
       console.warn('FormSubmit dispatch error:', e);
     }
 
+    // Send email confirmation directly to customer
+    if (newRes.userEmail && newRes.userEmail.includes('@')) {
+      try {
+        const itemsList = cleanItems.map(i => `- ${i.name}${i.selectedSize ? ' (Taille: ' + i.selectedSize + ')' : ''} x${i.quantity} = ${i.price * i.quantity} ₪`).join('\n');
+        fetch('https://formsubmit.co/ajax/' + encodeURIComponent(newRes.userEmail.trim()), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: `🛍️ Confirmation de votre Réservation - Bnot Séminaire (#${newRes.id})`,
+            Client: newRes.userName,
+            Seminaire: newRes.userSeminary || 'Non renseigné',
+            Mode_Livraison: newRes.deliveryOption || 'Livraison directe au séminaire',
+            Date_Livraison: newRes.deliveryDate || 'Non spécifiée',
+            Remarques: newRes.note || 'Aucune',
+            Montant_Total: `${newRes.totalPrice} ₪`,
+            Articles: itemsList,
+            Message: `Shalom ${newRes.userName},\n\nNous avons bien enregistré votre réservation ! Vos articles seront préparés et livrés à votre séminaire.\n\nMerci de votre confiance,\nL'équipe Bnot Séminaire`
+          })
+        }).catch(err => console.warn('Customer confirmation email notice:', err));
+      } catch (e) {
+        console.warn('Customer confirmation email exception:', e);
+      }
+    }
+
     this.clearCart();
     return newRes;
   },
 
   async updateReservationStatus(id, newStatus) {
     const resList = this.getReservations();
-    const idx = resList.findIndex(r => r.id === id);
+    const idx = resList.findIndex(r => String(r.id) === String(id) || String(r.full_id) === String(id));
     if (idx !== -1) {
-      resList[idx].status = newStatus;
+      const res = resList[idx];
+      res.status = newStatus;
       this.saveReservations(resList);
-      if (resList[idx].full_id) {
-        await SupabaseApi.updateOrderStatus(resList[idx].full_id, newStatus);
+
+      if (res.full_id) {
+        await SupabaseApi.updateOrderStatus(res.full_id, newStatus);
+      }
+
+      // Send status update email notification to customer
+      if (res.userEmail && res.userEmail.includes('@')) {
+        try {
+          const statusLabels = {
+            'pending': 'En attente',
+            'validated': 'Validée (En cours de préparation / livraison)',
+            'delivered': 'Livrée à votre séminaire',
+            'cancelled': 'Annulée'
+          };
+          const displayStatus = statusLabels[newStatus] || newStatus;
+
+          fetch('https://formsubmit.co/ajax/' + encodeURIComponent(res.userEmail.trim()), {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+              _subject: `📦 Statut de commande mis à jour - Bnot Séminaire (#${res.id})`,
+              Client: res.userName,
+              Nouveau_Statut: displayStatus,
+              Montant_Total: `${res.totalPrice} ₪`,
+              Message: `Shalom ${res.userName},\n\nLe statut de votre commande #${res.id} a été mis à jour par l'équipe Bnot Séminaire.\nNouveau Statut : ${displayStatus}.\n\nMerci de votre confiance !`
+            })
+          }).catch(err => console.warn('Status update email error:', err));
+        } catch (e) {
+          console.warn('Status update email exception:', e);
+        }
       }
     }
   },
