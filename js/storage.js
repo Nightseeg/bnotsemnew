@@ -506,26 +506,52 @@ export const Storage = {
     document.documentElement.setAttribute('data-theme', theme);
   },
 
-  // Reset Tokens
+  // Self-contained Reset Tokens (cross-device & cross-browser compatible)
+  generateResetToken(email) {
+    const payload = JSON.stringify({ email: email.trim().toLowerCase(), exp: Date.now() + 30 * 60 * 1000 });
+    const b64 = btoa(payload).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    const token = 'rst-' + b64;
+    
+    const tokens = JSON.parse(localStorage.getItem('bnotsem_reset_tokens') || '{}');
+    tokens[token] = {
+      email: email.trim().toLowerCase(),
+      expires: Date.now() + 30 * 60 * 1000
+    };
+    localStorage.setItem('bnotsem_reset_tokens', JSON.stringify(tokens));
+    return token;
+  },
+
   saveResetToken(email, token) {
     const tokens = JSON.parse(localStorage.getItem('bnotsem_reset_tokens') || '{}');
     tokens[token] = {
       email: email.trim().toLowerCase(),
-      expires: Date.now() + 15 * 60 * 1000 // Valid for 15 minutes
+      expires: Date.now() + 30 * 60 * 1000 // Valid for 30 minutes
     };
     localStorage.setItem('bnotsem_reset_tokens', JSON.stringify(tokens));
   },
 
   getResetTokenData(token) {
+    if (!token || typeof token !== 'string') return null;
+
+    // 1. Try local storage lookup
     const tokens = JSON.parse(localStorage.getItem('bnotsem_reset_tokens') || '{}');
-    const data = tokens[token];
-    if (!data) return null;
-    if (Date.now() > data.expires) {
-      delete tokens[token];
-      localStorage.setItem('bnotsem_reset_tokens', JSON.stringify(tokens));
+    if (tokens[token]) {
+      const data = tokens[token];
+      if (Date.now() <= data.expires) return data;
+    }
+
+    // 2. Cross-device fallback: decode self-contained Base64 payload
+    try {
+      if (!token.startsWith('rst-')) return null;
+      let b64 = token.substring(4).replace(/-/g, '+').replace(/_/g, '/');
+      while (b64.length % 4) b64 += '=';
+      const payload = JSON.parse(atob(b64));
+      if (!payload || !payload.email || !payload.exp) return null;
+      if (Date.now() > payload.exp) return { expired: true };
+      return { email: payload.email, expired: false };
+    } catch (e) {
       return null;
     }
-    return data;
   },
 
   removeResetToken(token) {

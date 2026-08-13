@@ -223,8 +223,10 @@ export function showAuthModal(initialMode = 'login', onNavigate, resetToken = nu
       return;
     }
 
-    const email = document.getElementById('auth-email').value;
-    const password = document.getElementById('auth-password').value;
+    const emailInput = document.getElementById('auth-email');
+    const passwordInput = document.getElementById('auth-password');
+    const email = emailInput ? emailInput.value : '';
+    const password = passwordInput ? passwordInput.value : '';
 
     if (isLogin) {
       const res = Auth.login(email, password);

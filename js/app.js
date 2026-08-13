@@ -253,11 +253,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.documentElement.setAttribute('data-theme', 'light');
   renderApp();
 
-  // Check URL query parameters for password reset token link
+  // Check URL query & hash parameters for password reset token link
   const urlParams = new URLSearchParams(window.location.search);
-  const resetToken = urlParams.get('reset_token');
+  let resetToken = urlParams.get('reset_token');
+  if (!resetToken && window.location.hash.includes('reset_token=')) {
+    const hashParams = new URLSearchParams(window.location.hash.substring(window.location.hash.indexOf('reset_token=')));
+    resetToken = hashParams.get('reset_token');
+  }
+
   if (resetToken) {
-    showAuthModal('reset-new', navigateTo, resetToken);
-    window.history.replaceState({}, document.title, window.location.pathname);
+    setTimeout(() => {
+      showAuthModal('reset-new', navigateTo, resetToken);
+    }, 100);
   }
 });

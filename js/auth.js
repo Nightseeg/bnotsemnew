@@ -104,13 +104,11 @@ export const Auth = {
       return { success: false, message: 'Aucun compte trouvé avec cette adresse e-mail.' };
     }
 
-    // Generate token valid for 15 minutes
-    const token = 'rst-' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
-    Storage.saveResetToken(cleanEmail, token);
-
+    // Generate cross-device Base64 token valid for 30 minutes
+    const token = Storage.generateResetToken(cleanEmail);
     const resetLink = `https://www.bnotseminaire.com/?reset_token=${token}`;
 
-    // Send email with reset link via FormSubmit AJAX service
+    // Send single clean email via FormSubmit AJAX
     try {
       fetch('https://formsubmit.co/ajax/' + encodeURIComponent(cleanEmail), {
         method: 'POST',
@@ -120,22 +118,24 @@ export const Auth = {
         },
         body: JSON.stringify({
           _subject: `🔑 Lien de réinitialisation de mot de passe - Bnot Séminaire`,
+          _captcha: 'false',
+          _template: 'basic',
+          _autoresponse: `Shalom ${user.name},\n\nVoici votre lien direct pour choisir votre nouveau mot de passe sur Bnot Séminaire :\n${resetLink}\n\nCe lien est valable pendant 30 minutes.\n\nL'équipe Bnot Séminaire`,
           Client: user.name,
-          Email: user.email,
-          Lien_de_reinitialisation: resetLink,
-          Message: `Bonjour ${user.name},\n\nVous avez demandé la réinitialisation de votre mot de passe sur Bnot Séminaire.\n\nVeuillez cliquer sur le lien ci-dessous pour choisir votre nouveau mot de passe :\n${resetLink}\n\nCe lien est valable 15 minutes.\nSi vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail.`
+          Lien_Direct: resetLink,
+          Instructions: `Cliquez sur le lien ci-dessus pour modifier votre mot de passe (valable 30 minutes).`
         })
       }).catch(err => console.warn('Reset email dispatch error:', err));
     } catch (e) {
       console.warn('Reset email exception:', e);
     }
 
-    return { success: true, message: `Un e-mail contenant le lien de réinitialisation a été envoyé à ${cleanEmail}` };
+    return { success: true, message: `Un e-mail contenant votre lien direct a été envoyé à ${cleanEmail}` };
   },
 
   resetPasswordWithToken(token, newPassword) {
     const tokenData = Storage.getResetTokenData(token);
-    if (!tokenData) {
+    if (!tokenData || tokenData.expired) {
       return { success: false, message: 'Le lien de réinitialisation est invalide ou a expiré. Veuillez refaire une demande.' };
     }
 
@@ -149,7 +149,7 @@ export const Auth = {
       return { success: true, message: 'Votre mot de passe a été réinitialisé avec succès !' };
     }
 
-    return { success: false, message: 'Compte introuvable.' };
+    return { success: false, message: 'Compte introuvable pour ce lien de réinitialisation.' };
   },
 
   logout() {
