@@ -714,3 +714,12 @@ img { max-width: 100%; height: auto; display: block; }
 .admin-live-alert-banner {
   animation: pulseAlert 2s infinite ease-in-out;
 }
+
+/* Performance Optimization: Instant page transitions & smooth decoding */
+#app {
+  contain: content;
+}
+
+.product-image {
+  decoding: async;
+}

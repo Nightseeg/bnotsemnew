@@ -71,14 +71,12 @@ function navigateTo(route, subParam = null) {
     }
   }
 
-  // Render page INSTANTLY (0ms delay) from cache
+  // Render page INSTANTLY (0ms delay) from fast cache
   renderApp();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: 'instant' });
 
-  // Background non-blocking sync from Supabase on any route
-  Storage.syncFromSupabase().then(() => {
-    renderApp();
-  });
+  // Throttled non-blocking sync in background (doesn't force DOM re-render)
+  Storage.syncFromSupabase();
 }
 
 function renderApp() {
