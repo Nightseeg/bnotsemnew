@@ -91,6 +91,25 @@ export const Auth = {
     return { success: true, user: newUser };
   },
 
+  resetPassword(email, newPassword) {
+    const users = Storage.getUsers();
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Check admin reset
+    if (cleanEmail === ADMIN_EMAIL) {
+      return { success: false, message: 'Le mot de passe administrateur principal ne peut être modifié ici.' };
+    }
+
+    const userIndex = users.findIndex(u => u.email && u.email.toLowerCase() === cleanEmail);
+    if (userIndex !== -1) {
+      users[userIndex].password = newPassword;
+      Storage.saveUsers(users);
+      return { success: true, message: 'Votre mot de passe a été réinitialisé avec succès !' };
+    }
+
+    return { success: false, message: 'Aucun compte trouvé avec cette adresse email. Veuillez créer un compte.' };
+  },
+
   logout() {
     Storage.logoutUser();
   },
