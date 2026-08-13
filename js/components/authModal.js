@@ -1,16 +1,17 @@
 /* ==========================================================================
-   BNOT SÉMINAIRE - AUTHENTICATION MODAL (WITH FORGOT PASSWORD & RESET)
+   BNOT SÉMINAIRE - AUTHENTICATION MODAL (PROFESSIONAL EMAIL LINK RESET)
    ========================================================================== */
 
 import { Auth } from '../auth.js';
 import { SupabaseApi } from '../supabase.js';
 
-export function showAuthModal(initialMode = 'login', onNavigate) {
+export function showAuthModal(initialMode = 'login', onNavigate, resetToken = null) {
   document.getElementById('modal-auth')?.remove();
 
   const isForgot = initialMode === 'forgot';
+  const isResetNew = initialMode === 'reset-new';
   const isSignup = initialMode === 'signup';
-  const isLogin = !isForgot && !isSignup;
+  const isLogin = !isForgot && !isSignup && !isResetNew;
   const isAdminLogin = initialMode === 'admin-login';
 
   let title = 'Connexion Élève';
@@ -22,6 +23,9 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
     icon = 'fa-user-plus';
   } else if (isForgot) {
     title = 'Mot de passe oublié';
+    icon = 'fa-paper-plane';
+  } else if (isResetNew) {
+    title = 'Nouveau mot de passe';
     icon = 'fa-key';
   }
 
@@ -43,7 +47,12 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
           ` : ''}
           ${isForgot ? `
             <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 0;">
-              Saisissez l'adresse e-mail de votre compte et définissez votre nouveau mot de passe.
+              Saisissez l'adresse e-mail associée à votre compte. Nous vous enverrons un <strong>lien direct par e-mail</strong> pour modifier votre mot de passe.
+            </p>
+          ` : ''}
+          ${isResetNew ? `
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.5rem; margin-bottom: 0;">
+              Lien de réinitialisation validé ! Veuillez saisir votre nouveau mot de passe ci-dessous.
             </p>
           ` : ''}
         </div>
@@ -113,9 +122,15 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
                 <input type="email" class="form-control" id="auth-email" placeholder="nom@exemple.com" required>
               </div>
 
+              <button type="submit" class="btn btn-pink-gradient btn-full btn-lg" style="margin-top: 1rem;">
+                <i class="fa-solid fa-paper-plane"></i> Envoyer le Lien par E-mail
+              </button>
+            ` : ''}
+
+            ${isResetNew ? `
               <div class="form-group">
                 <label class="form-label">Nouveau Mot de Passe *</label>
-                <input type="password" class="form-control" id="auth-password" placeholder="••••••••" required minlength="4">
+                <input type="password" class="form-control" id="auth-new-password" placeholder="••••••••" required minlength="4">
               </div>
 
               <div class="form-group">
@@ -124,7 +139,7 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
               </div>
 
               <button type="submit" class="btn btn-pink-gradient btn-full btn-lg" style="margin-top: 1rem;">
-                <i class="fa-solid fa-rotate-left"></i> Réinitialiser Mon Mot de Passe
+                <i class="fa-solid fa-floppy-disk"></i> Enregistrer le Nouveau Mot de Passe
               </button>
             ` : ''}
 
@@ -137,7 +152,7 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
             ${isSignup ? `
               Déjà inscrite ? <a href="#" id="link-switch-auth" style="color: var(--text-main); font-weight: 700;">Connectez-vous</a>
             ` : ''}
-            ${isForgot ? `
+            ${(isForgot || isResetNew) ? `
               <a href="#" id="link-back-login" style="color: var(--text-main); font-weight: 700;"><i class="fa-solid fa-arrow-left"></i> Retour à la connexion</a>
             ` : ''}
           </div>
@@ -173,10 +188,23 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
   // Form Submission
   document.getElementById('form-auth')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = document.getElementById('auth-email').value;
 
+    // Mode 1: Forgot Password - Request Email Link
     if (isForgot) {
-      const newPassword = document.getElementById('auth-password').value;
+      const email = document.getElementById('auth-email').value;
+      const res = Auth.sendPasswordResetLink(email);
+      if (res.success) {
+        window.showToast(res.message, 'success');
+        closeModal();
+      } else {
+        window.showToast(res.message, 'danger');
+      }
+      return;
+    }
+
+    // Mode 2: Reset New Password with Token Link
+    if (isResetNew) {
+      const newPassword = document.getElementById('auth-new-password').value;
       const confirmPassword = document.getElementById('auth-confirm-password').value;
 
       if (newPassword !== confirmPassword) {
@@ -184,9 +212,9 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
         return;
       }
 
-      const res = Auth.resetPassword(email, newPassword);
+      const res = Auth.resetPasswordWithToken(resetToken, newPassword);
       if (res.success) {
-        window.showToast('Mot de passe réinitialisé avec succès ! Connectez-vous maintenant.', 'success');
+        window.showToast('Votre mot de passe a été modifié avec succès ! Vous pouvez vous connecter.', 'success');
         closeModal();
         showAuthModal('login', onNavigate);
       } else {
@@ -195,6 +223,7 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
       return;
     }
 
+    const email = document.getElementById('auth-email').value;
     const password = document.getElementById('auth-password').value;
 
     if (isLogin) {
@@ -217,7 +246,6 @@ export function showAuthModal(initialMode = 'login', onNavigate) {
       });
 
       if (res.success) {
-        // Register profile in Supabase
         await SupabaseApi.createProfile({
           name: name,
           email: email,

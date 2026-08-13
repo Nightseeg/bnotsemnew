@@ -91,44 +91,65 @@ export const Auth = {
     return { success: true, user: newUser };
   },
 
-  resetPassword(email, newPassword) {
+  sendPasswordResetLink(email) {
     const users = Storage.getUsers();
     const cleanEmail = email.trim().toLowerCase();
 
-    // Check admin reset
     if (cleanEmail === ADMIN_EMAIL) {
-      return { success: false, message: 'Le mot de passe administrateur principal ne peut être modifié ici.' };
+      return { success: false, message: 'Le mot de passe de l\'administrateur principal se gère directement dans le panneau de configuration.' };
     }
 
-    const userIndex = users.findIndex(u => u.email && u.email.toLowerCase() === cleanEmail);
+    const user = users.find(u => u.email && u.email.toLowerCase() === cleanEmail);
+    if (!user) {
+      return { success: false, message: 'Aucun compte trouvé avec cette adresse e-mail.' };
+    }
+
+    // Generate token valid for 15 minutes
+    const token = 'rst-' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+    Storage.saveResetToken(cleanEmail, token);
+
+    const resetLink = `https://www.bnotseminaire.com/?reset_token=${token}`;
+
+    // Send email with reset link via FormSubmit AJAX service
+    try {
+      fetch('https://formsubmit.co/ajax/' + encodeURIComponent(cleanEmail), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: `🔑 Lien de réinitialisation de mot de passe - Bnot Séminaire`,
+          Client: user.name,
+          Email: user.email,
+          Lien_de_reinitialisation: resetLink,
+          Message: `Bonjour ${user.name},\n\nVous avez demandé la réinitialisation de votre mot de passe sur Bnot Séminaire.\n\nVeuillez cliquer sur le lien ci-dessous pour choisir votre nouveau mot de passe :\n${resetLink}\n\nCe lien est valable 15 minutes.\nSi vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet e-mail.`
+        })
+      }).catch(err => console.warn('Reset email dispatch error:', err));
+    } catch (e) {
+      console.warn('Reset email exception:', e);
+    }
+
+    return { success: true, message: `Un e-mail contenant le lien de réinitialisation a été envoyé à ${cleanEmail}` };
+  },
+
+  resetPasswordWithToken(token, newPassword) {
+    const tokenData = Storage.getResetTokenData(token);
+    if (!tokenData) {
+      return { success: false, message: 'Le lien de réinitialisation est invalide ou a expiré. Veuillez refaire une demande.' };
+    }
+
+    const users = Storage.getUsers();
+    const userIndex = users.findIndex(u => u.email && u.email.toLowerCase() === tokenData.email);
+
     if (userIndex !== -1) {
-      const user = users[userIndex];
-      user.password = newPassword;
+      users[userIndex].password = newPassword;
       Storage.saveUsers(users);
-
-      // Send email notification directly to the user's email address
-      try {
-        fetch('https://formsubmit.co/ajax/' + encodeURIComponent(cleanEmail), {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          body: JSON.stringify({
-            _subject: `🔑 Confirmation de réinitialisation de mot de passe - Bnot Séminaire`,
-            Client: user.name,
-            Email: user.email,
-            Notification: `Votre mot de passe Bnot Séminaire a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.`
-          })
-        }).catch(err => console.warn('Email dispatch notice:', err));
-      } catch (e) {
-        console.warn('Reset email exception:', e);
-      }
-
-      return { success: true, message: 'Votre mot de passe a été réinitialisé avec succès ! Un e-mail de confirmation vous a été envoyé.' };
+      Storage.removeResetToken(token);
+      return { success: true, message: 'Votre mot de passe a été réinitialisé avec succès !' };
     }
 
-    return { success: false, message: 'Aucun compte trouvé avec cette adresse email. Veuillez créer un compte.' };
+    return { success: false, message: 'Compte introuvable.' };
   },
 
   logout() {

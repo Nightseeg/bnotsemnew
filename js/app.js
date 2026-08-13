@@ -252,4 +252,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   await Storage.syncFromSupabase();
   document.documentElement.setAttribute('data-theme', 'light');
   renderApp();
+
+  // Check URL query parameters for password reset token link
+  const urlParams = new URLSearchParams(window.location.search);
+  const resetToken = urlParams.get('reset_token');
+  if (resetToken) {
+    showAuthModal('reset-new', navigateTo, resetToken);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
 });

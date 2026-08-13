@@ -445,5 +445,33 @@ export const Storage = {
   setTheme(theme) {
     localStorage.setItem(STORAGE_KEYS.THEME, theme);
     document.documentElement.setAttribute('data-theme', theme);
+  },
+
+  // Reset Tokens
+  saveResetToken(email, token) {
+    const tokens = JSON.parse(localStorage.getItem('bnotsem_reset_tokens') || '{}');
+    tokens[token] = {
+      email: email.trim().toLowerCase(),
+      expires: Date.now() + 15 * 60 * 1000 // Valid for 15 minutes
+    };
+    localStorage.setItem('bnotsem_reset_tokens', JSON.stringify(tokens));
+  },
+
+  getResetTokenData(token) {
+    const tokens = JSON.parse(localStorage.getItem('bnotsem_reset_tokens') || '{}');
+    const data = tokens[token];
+    if (!data) return null;
+    if (Date.now() > data.expires) {
+      delete tokens[token];
+      localStorage.setItem('bnotsem_reset_tokens', JSON.stringify(tokens));
+      return null;
+    }
+    return data;
+  },
+
+  removeResetToken(token) {
+    const tokens = JSON.parse(localStorage.getItem('bnotsem_reset_tokens') || '{}');
+    delete tokens[token];
+    localStorage.setItem('bnotsem_reset_tokens', JSON.stringify(tokens));
   }
 };
