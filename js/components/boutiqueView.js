@@ -4,6 +4,7 @@
 
 import { Storage } from '../storage.js';
 import { Auth } from '../auth.js';
+import { showEditReservationModal } from './editReservationModal.js';
 
 let activeCategory = 'all';
 let searchQuery = '';
@@ -81,6 +82,18 @@ export function renderBoutiqueView(onNavigate, activeTab = 'catalog') {
     document.getElementById('btn-tab-my-res')?.addEventListener('click', () => onNavigate('my-reservations'));
     document.getElementById('btn-mobile-float-cart')?.addEventListener('click', () => {
       window.dispatchEvent(new CustomEvent('open-cart-drawer'));
+    });
+
+    // Edit reservation buttons
+    document.querySelectorAll('.btn-edit-res').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const resId = btn.getAttribute('data-res-id');
+        const resList = Storage.getReservations();
+        const res = resList.find(r => String(r.id) === String(resId) || String(r.full_id) === String(resId));
+        if (res) {
+          showEditReservationModal(res, () => onNavigate('my-reservations'));
+        }
+      });
     });
 
     // Cancel reservation buttons
@@ -256,8 +269,26 @@ function renderMyReservations(reservations, onNavigate) {
 
               <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
                 <span style="font-size: 0.88rem; color: var(--text-muted);">Mode : Réservation livrée au séminaire</span>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                  <strong style="font-size: 1.2rem; color: var(--text-main);">${res.totalPrice} \u20aa</strong>
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                  <strong style="font-size: 1.2rem; color: var(--text-main); margin-right: 0.25rem;">${res.totalPrice} ₪</strong>
+                  ${(res.status === 'En attente' || res.status === 'pending') ? `
+                    <button class="btn btn-sm btn-edit-res" data-res-id="${res.id}" style="
+                      background: var(--accent-1-light);
+                      border: 1.5px solid var(--accent-1);
+                      color: var(--text-main);
+                      padding: 0.35rem 0.85rem;
+                      border-radius: var(--radius-sm);
+                      font-size: 0.82rem;
+                      font-weight: 700;
+                      cursor: pointer;
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 0.35rem;
+                      transition: all 0.15s ease;
+                    ">
+                      <i class="fa-solid fa-pen-to-square"></i> Modifier
+                    </button>
+                  ` : ''}
                   ${res.status !== 'Annulée' ? `
                     <button class="btn btn-sm btn-cancel-res" data-res-id="${res.id}" style="
                       background: transparent;

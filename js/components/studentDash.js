@@ -4,6 +4,7 @@
 
 import { Auth } from '../auth.js';
 import { Storage } from '../storage.js';
+import { showEditReservationModal } from './editReservationModal.js';
 
 export function renderStudentDashboard(onNavigate) {
   const user = Auth.getCurrentUser();
@@ -117,6 +118,7 @@ export function renderStudentDashboard(onNavigate) {
                   <th>Mode Livraison</th>
                   <th>Total</th>
                   <th>Statut</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,13 +126,29 @@ export function renderStudentDashboard(onNavigate) {
                   <tr>
                     <td><strong>#${res.id}</strong></td>
                     <td>${res.createdAt}</td>
-                    <td>${res.items.map(i => `${i.name} (x${i.quantity})`).join(', ')}</td>
-                    <td>${res.deliveryOption} (${res.deliveryDate})</td>
-                    <td><strong style="color: var(--primary);">${res.totalPrice} ${res.currency}</strong></td>
+                    <td>${res.items.map(i => `${i.name} (x${i.quantity || 1})`).join(', ')}</td>
+                    <td>${res.deliveryOption} (${res.deliveryDate || 'N/A'})</td>
+                    <td><strong style="color: var(--primary);">${res.totalPrice} ${res.currency || '₪'}</strong></td>
                     <td>
                       <span class="badge ${res.status === 'Validée' ? 'badge-success' : (res.status === 'Prête' ? 'badge-info' : 'badge-warning')}">
                         ${res.status}
                       </span>
+                    </td>
+                    <td>
+                      ${(res.status === 'En attente' || res.status === 'pending') ? `
+                        <button class="btn btn-sm btn-dash-edit-res" data-res-id="${res.id}" style="
+                          background: var(--accent-1-light);
+                          border: 1px solid var(--accent-1);
+                          color: var(--text-main);
+                          padding: 0.25rem 0.65rem;
+                          border-radius: 6px;
+                          font-size: 0.78rem;
+                          font-weight: 700;
+                          cursor: pointer;
+                        ">
+                          <i class="fa-solid fa-pen-to-square"></i> Modifier
+                        </button>
+                      ` : '<span style="font-size:0.75rem;color:var(--text-muted);">En préparation</span>'}
                     </td>
                   </tr>
                 `).join('')}
@@ -168,6 +186,17 @@ export function renderStudentDashboard(onNavigate) {
     document.getElementById('btn-go-visa')?.addEventListener('click', () => onNavigate('visa'));
     document.getElementById('btn-go-reservations')?.addEventListener('click', () => onNavigate('my-reservations'));
     document.getElementById('btn-view-all-res')?.addEventListener('click', () => onNavigate('my-reservations'));
+
+    document.querySelectorAll('.btn-dash-edit-res').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const resId = btn.getAttribute('data-res-id');
+        const resList = Storage.getReservations();
+        const res = resList.find(r => String(r.id) === String(resId) || String(r.full_id) === String(resId));
+        if (res) {
+          showEditReservationModal(res, () => onNavigate('dashboard'));
+        }
+      });
+    });
   }, 0);
 
   return html;

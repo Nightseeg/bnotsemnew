@@ -361,6 +361,37 @@ export const Storage = {
     return newRes;
   },
 
+  async updateReservationDetails(id, updatedData) {
+    const resList = this.getReservations();
+    const idx = resList.findIndex(r => String(r.id) === String(id) || String(r.full_id) === String(id));
+    
+    if (idx !== -1) {
+      const res = resList[idx];
+      if (updatedData.deliveryOption !== undefined) res.deliveryOption = updatedData.deliveryOption;
+      if (updatedData.deliveryDate !== undefined) res.deliveryDate = updatedData.deliveryDate;
+      if (updatedData.note !== undefined) res.note = updatedData.note;
+
+      if (updatedData.items) {
+        res.items = updatedData.items;
+        res.totalPrice = updatedData.items.reduce((sum, i) => sum + (parseFloat(i.price || 0) * parseInt(i.quantity || 1)), 0);
+      }
+
+      this.saveReservations(resList);
+
+      if (res.full_id) {
+        await SupabaseApi.updateOrder(res.full_id, {
+          items: res.items,
+          totalPrice: res.totalPrice,
+          deliveryOption: res.deliveryOption,
+          deliveryDate: res.deliveryDate,
+          note: res.note
+        });
+      }
+      return res;
+    }
+    return null;
+  },
+
   async updateReservationStatus(id, newStatus) {
     const resList = this.getReservations();
     const idx = resList.findIndex(r => String(r.id) === String(id) || String(r.full_id) === String(id));

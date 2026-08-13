@@ -280,6 +280,43 @@ export const SupabaseApi = {
     }
   },
 
+  async updateOrder(id, orderData) {
+    if (!supabase) return false;
+    try {
+      const itemsPayload = (orderData.items || []).map(i => ({
+        productId: i.productId,
+        name: i.name,
+        price: i.price,
+        quantity: i.quantity,
+        selectedSize: i.selectedSize || null,
+        currency: i.currency || '₪'
+      }));
+
+      // Store metadata inside jsonb items array
+      itemsPayload.push({
+        _meta: {
+          deliveryOption: orderData.deliveryOption || 'Livraison directe au séminaire',
+          deliveryDate: orderData.deliveryDate || '',
+          note: orderData.note || ''
+        }
+      });
+
+      const { error } = await supabase
+        .from('orders')
+        .update({
+          items: itemsPayload,
+          total_amount: orderData.totalPrice || 0
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+      return true;
+    } catch (e) {
+      console.error('Supabase update order error:', e);
+      return false;
+    }
+  },
+
   async updateOrderStatus(id, newStatus) {
     if (!supabase) return false;
     try {
