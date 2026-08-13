@@ -102,9 +102,30 @@ export const Auth = {
 
     const userIndex = users.findIndex(u => u.email && u.email.toLowerCase() === cleanEmail);
     if (userIndex !== -1) {
-      users[userIndex].password = newPassword;
+      const user = users[userIndex];
+      user.password = newPassword;
       Storage.saveUsers(users);
-      return { success: true, message: 'Votre mot de passe a été réinitialisé avec succès !' };
+
+      // Send email notification directly to the user's email address
+      try {
+        fetch('https://formsubmit.co/ajax/' + encodeURIComponent(cleanEmail), {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            _subject: `🔑 Confirmation de réinitialisation de mot de passe - Bnot Séminaire`,
+            Client: user.name,
+            Email: user.email,
+            Notification: `Votre mot de passe Bnot Séminaire a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.`
+          })
+        }).catch(err => console.warn('Email dispatch notice:', err));
+      } catch (e) {
+        console.warn('Reset email exception:', e);
+      }
+
+      return { success: true, message: 'Votre mot de passe a été réinitialisé avec succès ! Un e-mail de confirmation vous a été envoyé.' };
     }
 
     return { success: false, message: 'Aucun compte trouvé avec cette adresse email. Veuillez créer un compte.' };
