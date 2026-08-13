@@ -723,3 +723,13 @@ img { max-width: 100%; height: auto; display: block; }
 .product-image {
   decoding: async;
 }
+
+@keyframes shimmerBar {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(199, 169, 209, 0.3); }
+  50% { transform: scale(1.06); box-shadow: 0 15px 40px rgba(199, 169, 209, 0.6); }
+}

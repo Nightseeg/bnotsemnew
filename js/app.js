@@ -247,10 +247,25 @@ window.addEventListener('open-cart-drawer', () => {
 });
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await Storage.init();
-  await Storage.syncFromSupabase();
+  // 1. Instant local storage initialization
+  Storage.init();
   document.documentElement.setAttribute('data-theme', 'light');
+
+  // 2. Render App INSTANTLY (0ms delay)
   renderApp();
+
+  // 3. Smooth preloader fade out
+  const preloader = document.getElementById('app-preloader');
+  if (preloader) {
+    preloader.style.opacity = '0';
+    setTimeout(() => {
+      preloader.style.visibility = 'hidden';
+      preloader.remove();
+    }, 350);
+  }
+
+  // 4. Background non-blocking sync from Supabase
+  Storage.syncFromSupabase();
 
   // Check URL query & hash parameters for password reset token link
   const urlParams = new URLSearchParams(window.location.search);
