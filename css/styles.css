@@ -704,3 +704,13 @@ img { max-width: 100%; height: auto; display: block; }
   .toast-container { left: 0.75rem; right: 0.75rem; bottom: 5.5rem; }
   .toast { max-width: 100%; font-size: 0.85rem; }
 }
+
+@keyframes pulseAlert {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6); }
+  70% { box-shadow: 0 0 0 14px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.admin-live-alert-banner {
+  animation: pulseAlert 2s infinite ease-in-out;
+}

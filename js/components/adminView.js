@@ -8,6 +8,36 @@ import { SupabaseApi } from '../supabase.js';
 
 let activeAdminTab = 'overview';
 let cachedRequests = [];
+let knownOrderIds = new Set();
+let latestNewOrderAlert = null;
+
+function playAdminChime() {
+  try {
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContext) return;
+    const ctx = new AudioContext();
+    
+    // 3-note notification chime (E5 -> G5 -> C6)
+    const notes = [659.25, 783.99, 1046.50];
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.12);
+      
+      gain.gain.setValueAtTime(0.25, ctx.currentTime + idx * 0.12);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.12 + 0.3);
+      
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      
+      osc.start(ctx.currentTime + idx * 0.12);
+      osc.stop(ctx.currentTime + idx * 0.12 + 0.35);
+    });
+  } catch (e) {
+    console.warn('Audio chime play notice:', e);
+  }
+}
 
 export function renderAdminView(onNavigate, subTab) {
   const user = Auth.getCurrentUser();
@@ -23,6 +53,11 @@ export function renderAdminView(onNavigate, subTab) {
   const reservations = Storage.getReservations();
   const products = Storage.getProducts();
   const totalReservedAmount = reservations.reduce((sum, r) => sum + r.totalPrice, 0);
+
+  // Initialize known order IDs
+  if (knownOrderIds.size === 0 && reservations.length > 0) {
+    reservations.forEach(r => knownOrderIds.add(String(r.id)));
+  }
 
   SupabaseApi.getRequests().then(reqs => {
     if (reqs) cachedRequests = reqs;
@@ -44,11 +79,46 @@ export function renderAdminView(onNavigate, subTab) {
           <button class="btn btn-secondary btn-sm" id="btn-admin-back-home" style="border-radius: 20px; font-weight: 700;">
             <i class="fa-solid fa-house"></i> Accueil
           </button>
+          <button class="btn btn-outline-pill" id="btn-admin-test-sound" title="Tester le son de notification d'alerte">
+            <i class="fa-solid fa-volume-high"></i> Tester le Son
+          </button>
           <button class="btn btn-outline-pill" id="btn-admin-refresh" title="Rafraîchir depuis Supabase">
             <i class="fa-solid fa-arrows-rotate"></i> Synchroniser Supabase
           </button>
         </div>
       </div>
+
+      <!-- Live Order Alert Banner (Flash Alert) -->
+      ${latestNewOrderAlert ? `
+        <div class="admin-live-alert-banner" style="
+          background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+          color: white;
+          padding: 1rem 1.25rem;
+          border-radius: var(--radius-md);
+          margin-bottom: 1.5rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35);
+          flex-wrap: wrap;
+          gap: 1rem;
+        ">
+          <div style="display: flex; align-items: center; gap: 0.85rem;">
+            <div style="background: rgba(255,255,255,0.25); width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+              <i class="fa-solid fa-bell fa-bounce"></i>
+            </div>
+            <div>
+              <div style="font-weight: 800; font-size: 1.05rem;">🔔 NOUVELLE RÉSERVATION REÇUE EN DIRECT !</div>
+              <div style="font-size: 0.88rem; opacity: 0.95;">
+                Commande <strong>#${latestNewOrderAlert.id}</strong> passée par <strong>${latestNewOrderAlert.userName}</strong> (${latestNewOrderAlert.totalPrice} ₪)
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-sm" id="btn-dismiss-live-alert" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 8px; font-weight: 700;">
+            <i class="fa-solid fa-xmark"></i> Masquer L'Alerte
+          </button>
+        </div>
+      ` : ''}
 
       <!-- Admin Tabs -->
       <div class="tabs">
@@ -84,6 +154,16 @@ export function renderAdminView(onNavigate, subTab) {
 
     document.getElementById('btn-admin-back-home')?.addEventListener('click', () => onNavigate('home'));
 
+    document.getElementById('btn-dismiss-live-alert')?.addEventListener('click', () => {
+      latestNewOrderAlert = null;
+      onNavigate('admin', activeAdminTab);
+    });
+
+    document.getElementById('btn-admin-test-sound')?.addEventListener('click', () => {
+      playAdminChime();
+      window.showToast('🔔 Son d\'alerte de notification activé !', 'success');
+    });
+
     document.getElementById('btn-admin-refresh')?.addEventListener('click', async () => {
       window.showToast('Synchronisation des 16 articles Supabase en cours...', 'info');
       await Storage.syncFromSupabase();
@@ -94,11 +174,37 @@ export function renderAdminView(onNavigate, subTab) {
 
     bindTabEventListeners(activeAdminTab, users, reservations, products, onNavigate);
 
-    // Automatic live sync polling every 10 seconds for admin view
+    // Automatic live sync polling every 10 seconds for admin view with sound & flash alert
     if (window._adminSyncTimer) clearInterval(window._adminSyncTimer);
     window._adminSyncTimer = setInterval(async () => {
       if (document.querySelector('.admin-view')) {
-        await Storage.syncFromSupabase();
+        const freshOrders = await SupabaseApi.getOrders();
+        if (freshOrders && freshOrders.length > 0) {
+          const newOrders = freshOrders.filter(o => !knownOrderIds.has(String(o.id)));
+
+          if (newOrders.length > 0 && knownOrderIds.size > 0) {
+            // PLAY CHIME SOUND!
+            playAdminChime();
+
+            const newest = newOrders[0];
+            latestNewOrderAlert = newest;
+
+            // Show toast & notification
+            window.showToast(`🔔 NOUVELLE COMMANDE REÇUE EN DIRECT (#${newest.id} par ${newest.userName}) !`, 'success');
+
+            // Save fresh reservations and update known IDs
+            Storage.saveReservations(freshOrders);
+            freshOrders.forEach(o => knownOrderIds.add(String(o.id)));
+
+            // Re-render admin view with live flash alert banner
+            onNavigate('admin', 'reservations');
+            return;
+          }
+
+          freshOrders.forEach(o => knownOrderIds.add(String(o.id)));
+          Storage.saveReservations(freshOrders);
+        }
+
         cachedRequests = (await SupabaseApi.getRequests()) || [];
       } else {
         clearInterval(window._adminSyncTimer);
