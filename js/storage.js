@@ -315,6 +315,9 @@ export const Storage = {
         },
         body: JSON.stringify({
           _subject: `📦 NOUVELLE RÉSERVATION - ${newRes.userName} (${newRes.totalPrice} ₪)`,
+          _captcha: 'false',
+          _template: 'table',
+          _replyto: newRes.userEmail || '',
           Client: newRes.userName,
           Email_Client: newRes.userEmail || 'Non spécifié',
           Telephone: newRes.userPhone || 'Non renseigné',
